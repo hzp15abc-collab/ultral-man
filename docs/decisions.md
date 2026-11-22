@@ -15,3 +15,11 @@
 - Quaternius/KayKit CC0 实际包与免费范围待核，Blender 原创可替代；官方 IP 仅合法链接参考，不公开再分发原素材。A 明亮玩具模型城市、B 明亮动画特摄或明确混合，由用户 U1 认可审美与玩法；儿童舒适、非接触、守护城市及无频闪是共同约束。
 - 最终选型、许可、真实运行、iPhone、审美和音频仍 UNVERIFIED。U1 通过后另由 D 冻结同条件实验、硬门及失败阈值，再开 G1b。
 - 独立 D2 已通过：workflow_iterate_w2 根据初筛提出四份文档修订；d_supervisor 实际只读 W2、reference-board、decisions、tests、research、AGENTS 共六份，PASS，仅放行 U1；未放行 G1b、生产或发布。
+
+## ADR-003 · U1 / W3 REVIEWED · 2026-11-22
+
+- 用户明确确认 B 明亮动画特摄，玩法沿 U0-03、儿童安全及 iPhone 首要硬门不变；A/混合为未选历史候选。本条不声称用户实际试玩、音频或真机验收。
+- 候选实验提案：T1 Three.js + MoveNet；T2 Babylon.js + 同版 MoveNet（同模型比较引擎）；T3 同版 Three.js + MediaPipe（同引擎比较模型，精确权重/许可及零外联硬门）；PlayCanvas、BlazePose 保留备选。版本、资产、种子与配置按实际资格预检锁定，禁止未审变更。
+- 同合法原创/CC0 GLB、场景、样本与负载；实际模型测量，分仅渲染/仅推理/并行。建议数值门槛、同源和资格预检见 `tests.md`，需 D3 独立审核冻结，实验结果均 UNVERIFIED。候选隔离工作目录及交付见 `workflow.md`；不得写生产或提交。
+- 真机需要用户可打开的 HTTPS 实验入口，具体发布位置未授权，不擅自变更 Pages 或其他仓库。代理浏览器结果不等于 iPhone 通过。无真机或真实资格证据时停在待验；G1c 仅择通过全部硬门的候选。
+- 独立 D3 已实际只读 workflow、tests、reference-board、decisions、design、AGENTS、research 七份文档并 PASS，仅放行隔离资格预检及代理实验，冻结阈值和共同配置要求。G1b/G1c 成绩、真机、生产及发布仍未获实测放行。
