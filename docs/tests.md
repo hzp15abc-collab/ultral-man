@@ -1,6 +1,6 @@
 # 验收与证据
 
-尚未测试。G1a 已通过独立文档初筛；W2 经独立 D2 复核通过，仅放行 U1。2026-11-22 用户明确确认 B 明亮动画特摄，玩法沿 U0-03 不变。W3 协议及下列数值经独立 D3 冻结，不事后降标；不代表任何实际结果。
+G1a 已通过独立文档初筛；W2 经独立 D2 复核通过，仅放行 U1。2026-11-22 用户确认 B，W3 协议及下列数值经独立 D3 冻结。已完成部分依赖资格预检、静态检查及代理启动尝试，真实运行被环境权限阻塞；没有实际浏览器、推理、性能、网络或 iPhone 测试结果。W4 提案待 D4，所有原阈值不降标。
 
 | ID | 目标/风险 | 期望 | 状态 |
 |---|---|---|---|
@@ -35,3 +35,33 @@ T1 Three.js + MoveNet，T2 Babylon.js + 同版 MoveNet，T3 同版 Three.js + Me
 | 舒适及可读性硬门 | 独立审查真实画面与声音：0 频闪、0 剧烈震屏/惊吓，轻柔非接触姿态不要求力度/速度/跳跃，横屏提示清晰、反馈易懂、暂停/静音可用；至少检查 5 类代表事件（引导、普通反馈、能量特效、暂停、结束） | UNVERIFIED |
 
 以上是 W3 经 D3 冻结的阈值；每次以相同测量定义保留原始匿名数据，记录 p50/p95 使用的样本数与失败原因。硬门不以平均得分抵消，单组默认最多两次有证据的修复尝试；若无法取得必要依赖、许可、真机、隐私或舒适证据，标 UNVERIFIED/FAIL 并停止，不伪造 PASS，不提前进入生产。G1c 非实验实施者只从通过全部适用硬门的候选择优，真实原型、许可、实机、审美和音频均待独立验收。
+
+## W4 G1b 实际证据摘要（仅预检和静态，不是运行结果）
+
+证据路径：`experiments/g1b/common/PROXY-STATUS.md`、`frozen-config.json`、`t1/`、`t2/`（均在本地隔离实验目录）。独立 d_supervisor 实际只读七份代码/配置与相关文档，复算 hash、确认没有 `proxy-results`；未独立重跑。以下为公开安全摘要，不含个人数据。
+
+| 候选 | 实际可证明事项 | 运行/真机状态 |
+|---|---|---|
+| T1 | Three.js 0.187.0、TFJS 4.22.0、pose-detection 2.1.3、官方 MoveNet Lightning v4 权重及锁/hash；适配器/入口语法检查 | Chromium 尚未进入页面，socket() Operation not permitted (1) 后 SIGABRT；环境 BLOCKED，未运行 |
+| T2 | Babylon.js core/loaders 9.37.1、与 T1 同 TFJS/权重和锁/hash体系；适配器/入口语法检查 | 未重复相同环境权限限制启动，UNVERIFIED |
+| T3 | MediaPipe Tasks Vision 1.2.3 SDK 静态发现自动 Google POST 遥测路径且 WASM/NOTICE 署名未核 | 资格硬门 FAIL/STOP；未执行 SDK，无真实网络 trace |
+
+| 共同或候选文件（相对实验目录） | SHA256 |
+|---|---|
+| common/frozen-config.json | 4c05d393824cea6c07bfec7a9f16fc746c1e90332c552a94c07fa8bfec096e88 |
+| 共享原创 scene.glb | 9a73e9b020a4e8e4672cc2a8dbbf30029bcde6cd0a468402a4fde729f26a1d53 |
+| 合成 pose_fixture.mp4 | ac7a8c3d120ebdb1527c9f218ac9ae6bdb541a958defc4aef91aac14d2a20f99 |
+| MoveNet model.json | c65a3447162efa0c42af29498a4b151f4415b36ff3ae6fae2b28a32e840dcbfb |
+| 两份模型 data shards | b42c3232bf13b0efc691d3f0693dd3fc74404f709b1deee0a271828af6dbbea2 / 8253ab965aa3122c08f331777ca395ce9ca19bb9e7cb278b99de1c46dbdeb6dc |
+| t1/package-lock.json | 838949aad4e06bdec66a98b5635f21295c0f8de2fd817feefdec0a758c6fc0b3 |
+| t2/package-lock.json | 269a993943a2e08bab57990fadaa12a8ce56f6623d2593c89cab1cc1d315f077 |
+| t1/adapter.mjs | 8fbfa56ddd2da1ce91419243603a550edc7838d719e6cc365e381ad7c7c4d5e0 |
+| t1/index.html | 639234a69d353114a1e0ce342824b79b82543615841ac69dbc0f1d0a186c00b9 |
+| t2/adapter.mjs | 6330e6adec75285b75ee8d7d080116ab5a16d3aea999c567c0dc1380423f6ac9 |
+| t2/index.html | 74b029da1f8e6fb1a7f6733cc984d5acb624cd70bb8e9545a70aca32a5d0f5ca |
+| common/proxy-harness.mjs | 923a4bc66dee561e3251018ccef03182dffd1795be0ef96f3e3e94f5b43098df |
+| common/run-proxy.mjs | 2475d165c8cc4be15965efb218935173cecef0d835dbb5081f072e632bdaf955 |
+
+共同配置：WebGL、960×540/FOV42、32 粒子/无阴影、同一 GLB、权重、6 秒 480×270/12fps 合成几何人形视频与固定种子；原烟测仅 3s warmup / 12s observation 的部分协议，并未实际执行。绝不可拿合成素材证明真人姿态准确率、用模型耗时冒充动作到显示反馈、或把预检冒充零外联观察。W3 完整试验所有项目均 UNVERIFIED，G1b/G1c 不签 PASS。
+
+未来若用户授权隔离 HTTPS 实验入口，须先经新工作单及独立审查补齐成人自愿真实 iPhone 摄像头/停流、本地完整 W3 测量、网络白名单与运行记录、真实许可/署名、最小资产清单与回滚。W4 D4 仅审核阻塞及授权路径，不批准实现、部署或替代环境。
