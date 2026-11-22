@@ -1,6 +1,6 @@
-# 工作流 · W5（REVIEWED · D5 PASS）
+# 工作流 · W6（REVIEWED · D6 PASS）
 
-U0-03 / 2026-11-22 / L 模式。用户已批准多 Agent 监督型体系、3D 游戏及 iPhone 优先、公开开发仓库，U1 选择 B 明亮动画特摄。W1–W4 及 D1–D4 记录保留：G1b 代理运行因环境权限阻塞，T3 资格硬门停止。2026-11-22 用户明确授权现有公开 ultral-man 仓库内独立 HTTPS 实验入口并委托技术决策，仅用于非生产、非正式发布的 T1/T2 对照实验。W5 经独立 D5 放行构建与本地静态审查工作单；现无 G1b 真机实测、G1c 选型或上线证据，部署需第二独立审查。
+U0-03 / 2026-11-22 / L 模式。用户已批准多 Agent 监督体系、3D 与 iPhone 优先、公开开发仓库，U1 选择 B 明亮动画特摄。W1–W5 与原独立审核记录保留：代理运行权限阻塞，T3 资格硬门停止；用户明确授权现仓库内隔离 HTTPS 对照实验。W5 经 D5 放行并完成本地静态构建，独立实物静态审查 PASS；W6 经 D6 放行，仅暂存精确已审核构建到新建 gh-pages 分支并核远端。没有运行、真实相机、G1b/G1c、Pages 启用/上线证据，不能声称实验已部署可用或进入生产。
 
 | 门禁 | 状态 | 放行条件 |
 |---|---|---|
@@ -14,7 +14,9 @@ U0-03 / 2026-11-22 / L 模式。用户已批准多 Agent 监督型体系、3D �
 | W4/D4 | PASS | d_supervisor 独立只读六份证据/文档；仅允许呈交阻塞及向用户请求独立 HTTPS 实验授权 |
 | 实验入口用户授权 | PASS | 2026-11-22 用户明确许可现仓库内隔离 HTTPS 实验，非生产/正式发布 |
 | W5/D5 | PASS | d_supervisor 独立只读六份文档；仅放行 T1/T2 构建及本地静态审查 |
-| 实验候选部署前独立复核 | UNVERIFIED | 审核确切构建、隐私、许可、目录/回滚/发布条件；仅通过后可部署合法隔离实验入口 |
+| W5 最终静态构建独立复核 | PASS（限静态） | d_supervisor 实际只读产物/源码及逐文件哈希复算，无阻塞；运行与 Pages 未验 |
+| W6/D6 | PASS | d_supervisor 实际只读六份文档及清单；仅放行精确新分支暂存与远端验真 |
+| gh-pages 暂存/HTTPS 实验入口 | UNVERIFIED | 精确分支树及 blob 核对，Pages 配置/线上资源实证，不自动等于上线 |
 | G1c/D | UNVERIFIED | 非实现者复验、择优、更新文档并独立复核 |
 | G2 | UNVERIFIED | 逐模块实际产物及独立评审 |
 | G3 | UNVERIFIED | 独立视觉/音频/体验实物审核 |
@@ -78,6 +80,16 @@ PlayCanvas standalone 与 BlazePose TFJS 保留备选，不默认加试，不凑
 
 W5-D5 仅先放行构建及本地静态审查。完成后保存确切构建/hash、最小文件差分、依赖/资产/NOTICE/白名单及隐私证据、回滚点和已知限制，由独立非实施者第二次实际构建/隐私/许可/目录审查；只在其通过且 Pages 实际配置与发布权限明确时总控才可发布隔离实验候选。已核远端公开 main 与 admin push 权限，HTTPS 根 GET 404；工具未提供 Pages settings 能力，拟采用独立 `gh-pages` 发行分支/单独 `g1b/` 路径，发布范围仅测试静态构建。先核准确 Pages 配置，缺开启权限时请求用户做最小开启动作，禁止借其他环境/仓库绕过或改 main 其他内容。上线必须真实核对匿名访问及具体 HTTPS 路径后报告，404/无验证绝不算上线。此入口不是正式游戏；G1b/G1c 均仍 UNVERIFIED。
 
+## W6 · 精确发行树暂存方案（D6 已复核）
+
+独立 d_supervisor 实际只读 W5 最终静态构建、完整 app/index/NOTICE、metafiles/verifier 源、打包证据，并独立复算全部文件 SHA256、Git blob SHA1 及树哈希；静态审核相机/权限/生命周期、隐私、资源白名单、许可及署名，未发现阻塞。证据路径 `experiments/g1b/release/PACKAGE-EVIDENCE.md`、`release-manifest.json`、`dist/g1b/`。仅锁定此精确构建：29 个普通文件，10,663,193 bytes，buildId `w5-g1b-9e3f86e3598c25a3`，树 SHA256 `9e3f86e3598c25a3eb9cbab0cf0d922d31547e3588c8e5daedd4f3c3ff536c36`。静态 PASS 不等于运行期隐私/相机/性能、线上或真机 PASS。
+
+本轮用户明确授权仅现有公开仓库 `hzp15abc-collab/ultral-man` 的独立 HTTPS 实验。暂存条件：经独立 D6 审核 W6 后，总控先重新只读核 main 实际 HEAD 及 gh-pages 不存在（最近观察：main `afec3db49dfc8891b3e35fa1f961be10cb148217`，gh-pages 查询 404）；如实际分支已存在、权限/目标或基线无法核实则停止，不覆盖、不强推。用 29 个已审核文件的精确 blob 原子构建从空树起的仅 `g1b/` 路径发行树，以当前 main HEAD 为父提交建立新提交，再以该提交创建 **新** gh-pages 分支；main 不变（除项目文档正常提交），不得携带其他文件、私料、T3、构建工具或开发资料。暂存后核远端真实 branch/tree/blob 数量、精确路径、大小/hash 及无额外内容；不把本地清单或 API 成功回执当作线上部署成功。
+
+Pages 根 URL 仍为观察 404，配置未知，工具没有 settings 能力。不得代理更改 Pages 设置或权限，仅在暂存验证通过且确实需要时，请用户最小开启 Pages 来源 `gh-pages` / `/(root)`。实际启用后匿名核 `g1b/` HTTPS、必要资源返回与 build ID/版本，记录实际 URL 和证据后才能称为可访问实验。若分支/配置出现冲突或 404 持续，记录阻塞；不另起仓库或绕过权限。回滚保留新分支创建前为空的证据、main 实际 HEAD、发行 commit/tree/blob；若需撤回，另获明确授权才移除本次新建分支或由用户禁用对应 Pages 来源，或在有先前已审核产物时用同路径后继提交恢复其精确内容，不自动删除、不变 main、不强推。
+
+D6 只拟放行上列精确暂存路径及复核，不授权 Pages 设置、真实相机、生产或正式发布。用户实际成人 iPhone 测试须在匿名 HTTPS 实物验证后自愿进行，达到 W3 冻结门槛并独立复核才可判断 G1b/G1c；本节点不新增或降低任何 W3 阈值。
+
 ## 迭代制度
 
 每个里程碑绑定当前已审核 W revision、范围、只读基线、隔离写路径、交付证据、硬门槛、资源/失败上限。比较 2–3 个合理候选；G1b 实验前冻结相同输入/环境/场景/指标及停止条件。独立 G1c 只从全部硬门通过者择优。每项关键 Review 先归因→流程 Agent 提出递增 W revision→D 复核才派发下一任务；不先改代码后补文档。保留事实、失败和回退记录。每个失败点默认最多两次有证据的修复尝试，无新证据即停止或返回研究。
@@ -107,3 +119,7 @@ G2 里程碑：最小 3D/体感可玩切片 → 角色/场景资产 → 游戏�
 ## W5 自迭代记录（D5 已复核）
 
 2026-11-22 用户明确授权现有公开仓库下独立 HTTPS 实验入口并委托技术决策，非正式发布。流程自迭代 Agent workflow_iterate_w2 更新 workflow、decisions、tests、deployment，保留 W1–W4 和所有 W3 阈值。d_supervisor 实际全文只读 workflow、decisions、tests、deployment、AGENTS、PROXY-STATUS 共六份，D5 PASS，仅放行 T1/T2 同源静态实验候选构建及本地静态审查。实际部署仍须第二次独立实际构建/隐私/许可/清单/回滚审核及确切 Pages 配置/权限确认；不得启动真实相机、提交实验或部署、正式开发。页面 404 是总控环境证据，不等同已证明 Pages 未启用。链接实际验真后方可称上线。
+
+## W6 自迭代记录（D6 已复核）
+
+2026-11-22，流程自迭代 Agent workflow_iterate_w2 根据 W5 实际构建及 d_supervisor 独立静态复核结论更新 workflow、decisions、tests、deployment，保留 W1–W5 和全部 W3 门槛。d_supervisor 实际只读 workflow、decisions、tests、deployment、release-manifest、PACKAGE-EVIDENCE 六份，D6 PASS，仅放行重新核对实际 main/仓库权限与 gh-pages 确实不存在后，原子暂存该 29 个精确文件于同仓库新 gh-pages/g1b 及远端树/blob 验真。禁止改 main（文档除外）、强推覆盖、改 Pages 或权限；不代表 HTTPS 上线、真实运行、G1b/G1c 或生产通过。当前没有远端实验提交或运行时结果，待执行。
