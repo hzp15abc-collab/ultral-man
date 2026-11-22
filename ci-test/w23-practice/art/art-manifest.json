@@ -1,0 +1,682 @@
+{
+  "scope": "W20-B local only; not final engine choice, release, browser, human or iPhone acceptance",
+  "original_scene_sha256": "9a73e9b020a4e8e4672cc2a8dbbf30029bcde6cd0a468402a4fde729f26a1d53",
+  "original_bin_chunk_sha256": "edb771bf2d3757b1d28c17adc01c4af508c3cad50844c6aadade74ac52cbd2db",
+  "seed": 20261122,
+  "format": "glTF 2.0 GLB, uncompressed, textureless; original geometry byte-identical",
+  "original_node_count": 97,
+  "original_mesh_count": 87,
+  "options": {
+    "hero": {
+      "dawn": {
+        "title": "晨曦守护者",
+        "description": "珊瑚红、香槟金、珍珠白；修长的晨曦冠。",
+        "colors": {
+          "SentinelCrimson": [
+            0.79,
+            0.115,
+            0.16
+          ],
+          "AmberAccent": [
+            0.94,
+            0.59,
+            0.24
+          ],
+          "PearlAlloy": [
+            0.82,
+            0.86,
+            0.91
+          ],
+          "DeepOcean": [
+            0.045,
+            0.09,
+            0.18
+          ],
+          "TealEnergy": [
+            0.1,
+            0.72,
+            0.9
+          ]
+        },
+        "scale": {
+          "HeroHelmetCrest": [
+            0.86,
+            1.18,
+            0.96
+          ],
+          "HeroCrestJewel": [
+            0.88,
+            1.12,
+            1.0
+          ]
+        },
+        "accent": "#E16A57"
+      },
+      "star": {
+        "title": "星光守护者",
+        "description": "紫蓝、浅薄荷、月白；宽肩与柔和的星冠。",
+        "colors": {
+          "SentinelCrimson": [
+            0.23,
+            0.19,
+            0.79
+          ],
+          "AmberAccent": [
+            0.18,
+            0.69,
+            0.7
+          ],
+          "PearlAlloy": [
+            0.77,
+            0.83,
+            0.99
+          ],
+          "DeepOcean": [
+            0.06,
+            0.045,
+            0.21
+          ],
+          "TealEnergy": [
+            0.9,
+            0.64,
+            0.17
+          ]
+        },
+        "scale": {
+          "HeroHelmetCrest": [
+            1.67,
+            0.62,
+            1.0
+          ],
+          "HeroCrestJewel": [
+            1.22,
+            0.77,
+            1.0
+          ],
+          "HeroShoulderL": [
+            1.16,
+            0.87,
+            1.1
+          ],
+          "HeroShoulderR": [
+            1.16,
+            0.87,
+            1.1
+          ],
+          "HeroChestSilver": [
+            1.06,
+            0.86,
+            1.0
+          ],
+          "HeroEnergyJewel": [
+            1.2,
+            0.91,
+            1.0
+          ],
+          "HeroTempleL": [
+            1.13,
+            0.79,
+            1.0
+          ],
+          "HeroTempleR": [
+            1.13,
+            0.79,
+            1.0
+          ]
+        },
+        "accent": "#7674E9"
+      }
+    },
+    "friend": {
+      "cloud": {
+        "title": "云团伙伴",
+        "description": "白绒绒的胖肚子、海盐蓝和淡紫；圆圆的大耳朵。",
+        "colors": {
+          "CreatureMint": [
+            0.45,
+            0.77,
+            0.91
+          ],
+          "CreatureSoftAqua": [
+            0.92,
+            0.97,
+            1.0
+          ],
+          "CreatureLilac": [
+            0.6,
+            0.65,
+            0.91
+          ],
+          "CreaturePeach": [
+            0.96,
+            0.49,
+            0.58
+          ],
+          "AmberAccent": [
+            0.89,
+            0.76,
+            0.44
+          ],
+          "DeepOcean": [
+            0.045,
+            0.1,
+            0.2
+          ],
+          "CloudWhite": [
+            0.98,
+            0.98,
+            1.0
+          ]
+        },
+        "scale": {
+          "MonsterBody": [
+            1.02,
+            1.03,
+            1.0
+          ],
+          "MonsterEarL": [
+            1.18,
+            1.18,
+            1.1
+          ],
+          "MonsterEarR": [
+            1.18,
+            1.18,
+            1.1
+          ],
+          "MonsterHornL": [
+            0.88,
+            0.64,
+            0.94
+          ],
+          "MonsterHornR": [
+            0.88,
+            0.64,
+            0.94
+          ]
+        },
+        "accent": "#9DDDF4"
+      },
+      "blob": {
+        "title": "布丁伙伴",
+        "description": "杏桃橙、奶油黄、浅粉紫；矮胖的软糖轮廓。",
+        "colors": {
+          "CreatureMint": [
+            0.94,
+            0.49,
+            0.26
+          ],
+          "CreatureSoftAqua": [
+            1,
+            0.86,
+            0.54
+          ],
+          "CreatureLilac": [
+            0.84,
+            0.49,
+            0.76
+          ],
+          "CreaturePeach": [
+            0.99,
+            0.3,
+            0.39
+          ],
+          "AmberAccent": [
+            0.99,
+            0.77,
+            0.31
+          ],
+          "DeepOcean": [
+            0.12,
+            0.065,
+            0.13
+          ],
+          "CloudWhite": [
+            1,
+            0.97,
+            0.89
+          ]
+        },
+        "scale": {
+          "MonsterBody": [
+            1.2,
+            1.0,
+            1.12
+          ],
+          "MonsterBelly": [
+            1.16,
+            0.95,
+            1
+          ],
+          "MonsterHead": [
+            1.07,
+            0.94,
+            0.98
+          ],
+          "MonsterEarL": [
+            1.02,
+            0.72,
+            1.06
+          ],
+          "MonsterEarR": [
+            1.02,
+            0.72,
+            1.06
+          ],
+          "MonsterHornL": [
+            1.12,
+            0.52,
+            1.08
+          ],
+          "MonsterHornR": [
+            1.12,
+            0.52,
+            1.08
+          ],
+          "MonsterFootL": [
+            1.08,
+            0.91,
+            1.0
+          ],
+          "MonsterFootR": [
+            1.08,
+            0.91,
+            1.0
+          ],
+          "MonsterTail": [
+            1.1,
+            0.91,
+            0.8
+          ]
+        },
+        "accent": "#FFC075"
+      }
+    },
+    "city": {
+      "dawn": {
+        "title": "蓝湾晨光",
+        "description": "浅青地面、海蓝玻璃、奶白和薄荷建筑。",
+        "colors": {
+          "CityFacade0": [
+            0.72,
+            0.83,
+            0.9
+          ],
+          "CityFacade1": [
+            0.6,
+            0.7,
+            0.87
+          ],
+          "CityFacade2": [
+            0.87,
+            0.85,
+            0.68
+          ],
+          "CityFacade3": [
+            0.57,
+            0.85,
+            0.76
+          ],
+          "RoofPale": [
+            0.77,
+            0.88,
+            0.95
+          ],
+          "WindowAzure": [
+            0.21,
+            0.47,
+            0.74
+          ],
+          "WarmWindow": [
+            0.9,
+            0.73,
+            0.26
+          ],
+          "RoadSlate": [
+            0.27,
+            0.42,
+            0.55
+          ],
+          "ParkSurface": [
+            0.36,
+            0.66,
+            0.63
+          ],
+          "RoadPaint": [
+            0.92,
+            0.96,
+            0.95
+          ]
+        },
+        "scale": {},
+        "accent": "#8CCDD6"
+      },
+      "sunset": {
+        "title": "桃霞小城",
+        "description": "柔暖桃色立面、淡紫蓝街道、暖金色窗户。",
+        "colors": {
+          "CityFacade0": [
+            0.88,
+            0.61,
+            0.49
+          ],
+          "CityFacade1": [
+            0.69,
+            0.56,
+            0.8
+          ],
+          "CityFacade2": [
+            0.96,
+            0.76,
+            0.58
+          ],
+          "CityFacade3": [
+            0.67,
+            0.78,
+            0.82
+          ],
+          "RoofPale": [
+            0.9,
+            0.75,
+            0.77
+          ],
+          "WindowAzure": [
+            0.36,
+            0.3,
+            0.62
+          ],
+          "WarmWindow": [
+            0.98,
+            0.79,
+            0.39
+          ],
+          "RoadSlate": [
+            0.33,
+            0.32,
+            0.48
+          ],
+          "ParkSurface": [
+            0.63,
+            0.54,
+            0.67
+          ],
+          "RoadPaint": [
+            0.98,
+            0.92,
+            0.78
+          ]
+        },
+        "scale": {},
+        "accent": "#E9B1A7"
+      }
+    }
+  },
+  "scenes": [
+    {
+      "hero": "dawn",
+      "friend": "cloud",
+      "city": "dawn",
+      "file": "scenes/dawn-cloud-dawn.glb",
+      "sha256": "5c1b1a438d5fdb86f8af164f2b312fd94ae1aeecf3962b09e71aaf474e135034",
+      "bytes": 698000,
+      "bin_chunk_sha256": "edb771bf2d3757b1d28c17adc01c4af508c3cad50844c6aadade74ac52cbd2db",
+      "node_count": 97,
+      "mesh_count": 87,
+      "cloned_materials": 22,
+      "changed_non_joint_scales": [
+        "HeroCrestJewel",
+        "HeroHelmetCrest",
+        "MonsterBody",
+        "MonsterEarL",
+        "MonsterEarR",
+        "MonsterHornL",
+        "MonsterHornR"
+      ]
+    },
+    {
+      "hero": "dawn",
+      "friend": "cloud",
+      "city": "sunset",
+      "file": "scenes/dawn-cloud-sunset.glb",
+      "sha256": "06681375220b825b88657a704d8d0aa895563c132cebbde18c7c6790e028e855",
+      "bytes": 698000,
+      "bin_chunk_sha256": "edb771bf2d3757b1d28c17adc01c4af508c3cad50844c6aadade74ac52cbd2db",
+      "node_count": 97,
+      "mesh_count": 87,
+      "cloned_materials": 22,
+      "changed_non_joint_scales": [
+        "HeroCrestJewel",
+        "HeroHelmetCrest",
+        "MonsterBody",
+        "MonsterEarL",
+        "MonsterEarR",
+        "MonsterHornL",
+        "MonsterHornR"
+      ]
+    },
+    {
+      "hero": "dawn",
+      "friend": "blob",
+      "city": "dawn",
+      "file": "scenes/dawn-blob-dawn.glb",
+      "sha256": "97ccfb0c8945089b9afce5356e9f1b25404c847a8d40c65733ad2e052e0254d4",
+      "bytes": 698116,
+      "bin_chunk_sha256": "edb771bf2d3757b1d28c17adc01c4af508c3cad50844c6aadade74ac52cbd2db",
+      "node_count": 97,
+      "mesh_count": 87,
+      "cloned_materials": 22,
+      "changed_non_joint_scales": [
+        "HeroCrestJewel",
+        "HeroHelmetCrest",
+        "MonsterBelly",
+        "MonsterBody",
+        "MonsterEarL",
+        "MonsterEarR",
+        "MonsterFootL",
+        "MonsterFootR",
+        "MonsterHead",
+        "MonsterHornL",
+        "MonsterHornR",
+        "MonsterTail"
+      ]
+    },
+    {
+      "hero": "dawn",
+      "friend": "blob",
+      "city": "sunset",
+      "file": "scenes/dawn-blob-sunset.glb",
+      "sha256": "97de29d37db2e4395a6559e5efdf06fb3accb52d3f8bfd8b8cd67a27330d2c29",
+      "bytes": 698116,
+      "bin_chunk_sha256": "edb771bf2d3757b1d28c17adc01c4af508c3cad50844c6aadade74ac52cbd2db",
+      "node_count": 97,
+      "mesh_count": 87,
+      "cloned_materials": 22,
+      "changed_non_joint_scales": [
+        "HeroCrestJewel",
+        "HeroHelmetCrest",
+        "MonsterBelly",
+        "MonsterBody",
+        "MonsterEarL",
+        "MonsterEarR",
+        "MonsterFootL",
+        "MonsterFootR",
+        "MonsterHead",
+        "MonsterHornL",
+        "MonsterHornR",
+        "MonsterTail"
+      ]
+    },
+    {
+      "hero": "star",
+      "friend": "cloud",
+      "city": "dawn",
+      "file": "scenes/star-cloud-dawn.glb",
+      "sha256": "9d28e1c0cbe036b5dd75d8ce73bfaffb692ca79014eed806c12f3fa647a6c920",
+      "bytes": 698140,
+      "bin_chunk_sha256": "edb771bf2d3757b1d28c17adc01c4af508c3cad50844c6aadade74ac52cbd2db",
+      "node_count": 97,
+      "mesh_count": 87,
+      "cloned_materials": 22,
+      "changed_non_joint_scales": [
+        "HeroShoulderL",
+        "HeroShoulderR",
+        "HeroChestSilver",
+        "HeroCrestJewel",
+        "HeroEnergyJewel",
+        "HeroHelmetCrest",
+        "HeroTempleL",
+        "HeroTempleR",
+        "MonsterBody",
+        "MonsterEarL",
+        "MonsterEarR",
+        "MonsterHornL",
+        "MonsterHornR"
+      ]
+    },
+    {
+      "hero": "star",
+      "friend": "cloud",
+      "city": "sunset",
+      "file": "scenes/star-cloud-sunset.glb",
+      "sha256": "d1d46ea62ec5b13b0b6a117453c269c2f41b3cd14a789f791290b62d4f9286ef",
+      "bytes": 698144,
+      "bin_chunk_sha256": "edb771bf2d3757b1d28c17adc01c4af508c3cad50844c6aadade74ac52cbd2db",
+      "node_count": 97,
+      "mesh_count": 87,
+      "cloned_materials": 22,
+      "changed_non_joint_scales": [
+        "HeroShoulderL",
+        "HeroShoulderR",
+        "HeroChestSilver",
+        "HeroCrestJewel",
+        "HeroEnergyJewel",
+        "HeroHelmetCrest",
+        "HeroTempleL",
+        "HeroTempleR",
+        "MonsterBody",
+        "MonsterEarL",
+        "MonsterEarR",
+        "MonsterHornL",
+        "MonsterHornR"
+      ]
+    },
+    {
+      "hero": "star",
+      "friend": "blob",
+      "city": "dawn",
+      "file": "scenes/star-blob-dawn.glb",
+      "sha256": "338c6fb45ec2074ca42aefa48fd3b3ab18cddab8332e970ff58faaafcd3fa725",
+      "bytes": 698260,
+      "bin_chunk_sha256": "edb771bf2d3757b1d28c17adc01c4af508c3cad50844c6aadade74ac52cbd2db",
+      "node_count": 97,
+      "mesh_count": 87,
+      "cloned_materials": 22,
+      "changed_non_joint_scales": [
+        "HeroShoulderL",
+        "HeroShoulderR",
+        "HeroChestSilver",
+        "HeroCrestJewel",
+        "HeroEnergyJewel",
+        "HeroHelmetCrest",
+        "HeroTempleL",
+        "HeroTempleR",
+        "MonsterBelly",
+        "MonsterBody",
+        "MonsterEarL",
+        "MonsterEarR",
+        "MonsterFootL",
+        "MonsterFootR",
+        "MonsterHead",
+        "MonsterHornL",
+        "MonsterHornR",
+        "MonsterTail"
+      ]
+    },
+    {
+      "hero": "star",
+      "friend": "blob",
+      "city": "sunset",
+      "file": "scenes/star-blob-sunset.glb",
+      "sha256": "e2e32b7b8edd858ff81c7642edddfbc508b922243f116e921991ce733e7d3dbf",
+      "bytes": 698260,
+      "bin_chunk_sha256": "edb771bf2d3757b1d28c17adc01c4af508c3cad50844c6aadade74ac52cbd2db",
+      "node_count": 97,
+      "mesh_count": 87,
+      "cloned_materials": 22,
+      "changed_non_joint_scales": [
+        "HeroShoulderL",
+        "HeroShoulderR",
+        "HeroChestSilver",
+        "HeroCrestJewel",
+        "HeroEnergyJewel",
+        "HeroHelmetCrest",
+        "HeroTempleL",
+        "HeroTempleR",
+        "MonsterBelly",
+        "MonsterBody",
+        "MonsterEarL",
+        "MonsterEarR",
+        "MonsterFootL",
+        "MonsterFootR",
+        "MonsterHead",
+        "MonsterHornL",
+        "MonsterHornR",
+        "MonsterTail"
+      ]
+    }
+  ],
+  "audio": [
+    {
+      "event": "light-ready",
+      "file": "audio/light-ready.wav",
+      "sha256": "0120e1f535d730f1a5f808e9bfea6bf97450c15fe0d4898beb77e65dc2aeafb5",
+      "bytes": 39734,
+      "rate_hz": 44100,
+      "channels": 1,
+      "encoding": "PCM signed 16 little-endian",
+      "duration_seconds": 0.45,
+      "peak": 0.17746513260292368,
+      "rms": 0.051599945331520895,
+      "peak_dbfs": -15.017739241544634
+    },
+    {
+      "event": "shield-ready",
+      "file": "audio/shield-ready.wav",
+      "sha256": "f4a863653434e2e945a928d62769b8d7c4f2b201172baf1ec3742536253ffd5d",
+      "bytes": 43262,
+      "rate_hz": 44100,
+      "channels": 1,
+      "encoding": "PCM signed 16 little-endian",
+      "duration_seconds": 0.49,
+      "peak": 0.23941770683919797,
+      "rms": 0.057029468143482476,
+      "peak_dbfs": -12.416874664374868
+    },
+    {
+      "event": "friend-ready",
+      "file": "audio/friend-ready.wav",
+      "sha256": "277ad33903c96f0cd5c9256ee67e8fd0b02ae5f25a920a92123a75b70fafa50c",
+      "bytes": 49438,
+      "rate_hz": 44100,
+      "channels": 1,
+      "encoding": "PCM signed 16 little-endian",
+      "duration_seconds": 0.5600226757369614,
+      "peak": 0.1389812921536912,
+      "rms": 0.04598709866481147,
+      "peak_dbfs": -17.1408730972515
+    },
+    {
+      "event": "round-success",
+      "file": "audio/round-success.wav",
+      "sha256": "6fdefde86f439ad98e1379b47e421a3664a84e74646211c9e3d27e3dc8a83ff5",
+      "bytes": 68840,
+      "rate_hz": 44100,
+      "channels": 1,
+      "encoding": "PCM signed 16 little-endian",
+      "duration_seconds": 0.78,
+      "peak": 0.1596423230689413,
+      "rms": 0.05093489611733445,
+      "peak_dbfs": -15.93703922228526
+    }
+  ]
+}

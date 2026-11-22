@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; media-src 'self' blob:; font-src 'self'; worker-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>光之小队 · 城市守护练习</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./experience.mjs"></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="badge-icon" aria-hidden="true">✦</span>
+        <div><p class="eyebrow">光之小队 · LIGHT FRIENDS</p><h1>一起守护城市！</h1></div>
+      </div>
+      <div class="top-tools">
+        <span class="mode-pill">触屏练习 · 无相机</span>
+        <label class="volume-label" for="volume">声音 <input id="volume" type="range" min="0" max="1" step="0.05" value="0.35"></label>
+        <button id="mute" class="icon-button" type="button" aria-pressed="false">静音</button>
+        <span id="audio-state" class="audio-state" role="status" hidden>声音暂不可用</span>
+      </div>
+    </header>
+
+    <section class="choice-bar" aria-label="选择伙伴和城市">
+      <label class="choice"><span>我的英雄</span><select id="hero"><option value="dawn">晨曦守护者</option><option value="star">星光守护者</option></select></label>
+      <label class="choice"><span>友善伙伴</span><select id="friend"><option value="cloud">云团伙伴</option><option value="blob">布丁伙伴</option></select></label>
+      <label class="choice"><span>我的城市</span><select id="city"><option value="dawn">蓝湾晨光</option><option value="sunset">暖霞城市</option></select></label>
+      <label class="choice technical"><span>3D 候选</span><select id="engine"><option value="T1">Three.js</option><option value="T2">Babylon.js</option></select></label>
+    </section>
+
+    <div class="game-layout">
+      <section class="world" aria-label="原创三维世界">
+        <p class="rotate-hint" role="note">横放设备，守护城市会看得更完整。也可以继续竖屏触屏练习。</p>
+        <p class="compact-mode">触屏练习 · 无相机</p>
+        <div class="scene-view">
+        <div id="stage" class="stage">
+          <canvas id="scene" width="960" height="540" aria-label="原创英雄、友善伙伴和城市 3D 预览"></canvas>
+          <div class="stage-hud">
+            <span class="hud-pill">光之守护</span>
+            <span class="hud-pill world-name">守护城市</span>
+            <div class="stage-tools">
+              <div class="stars" aria-label="本轮星星 0 颗" id="stars"><span>☆</span><span>☆</span><span>☆</span></div>
+              <button id="pause" type="button" class="button secondary stage-pause" hidden aria-label="休息一下">Ⅱ</button>
+              <button id="resume" type="button" class="button primary stage-pause" hidden aria-label="继续练习">▶</button>
+            </div>
+          </div>
+          <p id="visual-status" class="visual-status" role="status">正在准备原创 3D 场景…</p>
+        </div>
+        <div class="stage-footer">
+          <p class="mission-hint stage-guide" id="goal-hint">先选你喜欢的英雄和伙伴，再点开始练习。</p>
+        </div>
+        </div>
+        <p class="safety-note">轻轻做、慢慢来。无需跳跃、用力或碰到任何人。累了就休息。</p>
+      </section>
+
+      <section class="mission-card" aria-label="守护任务">
+        <div class="mission-kicker"><span>第 <b id="round">1</b> 轮 · <span id="world-name">蓝湾晨光</span></span><div class="remaining" aria-label="剩余练习时间"><span>剩余 <b id="time">30</b> 秒</span><progress id="timebar" max="30000" value="30000"></progress></div></div>
+        <div class="mission-kicker"><span>守护任务</span><span><b id="progress-count">0</b> / 3</span></div>
+        <h2 id="goal-title">准备一起出发</h2>
+        <ol class="mission-list" id="mission-list">
+          <li data-goal="light"><span class="goal-icon" aria-hidden="true">✧</span><span><b>点亮城市</b><small>给窗户带来温暖光亮</small></span><span class="goal-state">待开始</span></li>
+          <li data-goal="shield"><span class="goal-icon" aria-hidden="true">○</span><span><b>温柔守护</b><small>为城市戴上一圈保护光环</small></span><span class="goal-state">待开始</span></li>
+          <li data-goal="restore"><span class="goal-icon" aria-hidden="true">♡</span><span><b>帮助伙伴</b><small>让小伙伴恢复开心</small></span><span class="goal-state">待开始</span></li>
+        </ol>
+        <div class="feedback" id="feedback" role="status" aria-live="polite">准备好就出发吧！</div>
+        <div class="row-actions">
+          <button id="start" type="button" class="button primary">开始练习</button>
+          <button id="retry" type="button" class="button primary" hidden>再试一次</button>
+          <button id="next" type="button" class="button primary" hidden>下一轮</button>
+          <button id="restart" type="button" class="button secondary" hidden>重新开始</button>
+          <button id="stop" type="button" class="button secondary" hidden>结束练习</button>
+        </div>
+        <p class="total">累计收集 <strong id="total-stars">0</strong> 颗星星</p>
+      </section>
+    </div>
+
+    <section class="practice-panel" aria-label="触屏练习按键">
+      <div class="practice-heading"><h2>你的练习动作</h2><p>每次先点「放松」，再点当前任务。只是触屏练习，不需要做真实动作。</p></div>
+      <div class="practice-buttons" id="poses">
+        <button type="button" class="pose-button neutral" data-action="neutral" disabled><span class="pose-icon" aria-hidden="true">◉</span><span>放松</span><small>回到自然状态</small></button>
+        <button type="button" class="pose-button" data-action="light" disabled><span class="pose-icon" aria-hidden="true">✧</span><span>点亮</span><small>暖暖的光</small></button>
+        <button type="button" class="pose-button" data-action="shield" disabled><span class="pose-icon" aria-hidden="true">○</span><span>守护</span><small>温柔光环</small></button>
+        <button type="button" class="pose-button" data-action="restore" disabled><span class="pose-icon" aria-hidden="true">♡</span><span>帮助</span><small>伙伴笑起来</small></button>
+      </div>
+    </section>
+
+    <footer class="lab-note">
+      <div><b>研发候选 · 非正式游戏</b><p>本页仅无相机触屏练习。尚未验证真实动作识别及 iPhone；体感模型不会在这里启动。</p></div>
+      <div class="check-box"><button type="button" id="selfcheck" class="button secondary">运行规则自检</button><output id="check-result" aria-live="polite"></output></div>
+    </footer>
+  </main>
+</body>
+</html>

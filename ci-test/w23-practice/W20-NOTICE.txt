@@ -1,0 +1,2 @@
+W20 isolated provisional original fantasy city guardian; NOT an official media character or published game.
+Derived from W9 local assets with original NOTICE.txt and licenses retained. New renderer modifications add simple procedural state feedback and use the same Three.js/Babylon.js versions; no new dependencies or external assets. Original palette/geometry variants and WAVs generated within this project. Camera/model execution disabled in this local preview. See project art provenance and manifest.

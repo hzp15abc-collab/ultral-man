@@ -1,4 +1,6 @@
-name: W19 published W9 proxy pair test
+# LOCAL DRAFT ONLY. D24-A does not approve insertion in a remote workflow or execution.
+# Proposed replacement of .github/workflows/w18-environment-probe.yml, solely after user consent + D24-B.
+name: W24 W23 practice trial (draft)
 on:
   push:
     branches: [ci/webgl-probe-w18]
@@ -6,188 +8,268 @@ on:
 permissions:
   contents: read
 jobs:
-  published-proxy:
+  practice:
     runs-on: macos-15
     timeout-minutes: 8
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
     steps:
-      - name: Resolve exact dependency and inspect lock before install
+      - name: Check out exact candidate commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+          submodules: false
+          lfs: false
+      - name: Resolve and inspect exact reviewed tooling
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/w18-probe"
-          cd "$RUNNER_TEMP/w18-probe"
+          test "$(uname -s)" = Darwin && test "$(uname -m)" = arm64
+          mkdir -p "$RUNNER_TEMP/w24-probe"
+          cd "$RUNNER_TEMP/w24-probe"
           npm init -y >/dev/null
           npm install --package-lock-only --ignore-scripts --omit=optional --save-exact --no-audit --no-fund --registry=https://registry.npmjs.org playwright@1.58.2 playwright-core@1.58.2
-          node <<'JS'
-          const assert = require('node:assert/strict');
-          const lock = require('./package-lock.json');
-          const expected = {
-            playwright: 'sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A==',
-            'playwright-core': 'sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg=='
+          node <<'LOCK'
+          const assert=require('node:assert/strict'), lock=require('./package-lock.json');
+          const pins={
+            playwright:'sha512-vA30H8Nvkq/cPBnNw4Q8TWz1EJyqgpuinBcHET0YVJVFldr8JDNiU9LaWAE1KqSkRYazuaBhTpB5ZzShOezQ6A==',
+            'playwright-core':'sha512-yZkEtftgwS8CsfYo7nm0KE8jsvm6i/PTgVtB8DL726wNf6H2IMsDuxCpJj59KDaxCtSnrWan2AeDqM7JBaultg=='
           };
-          for (const [name, integrity] of Object.entries(expected)) {
-            const p = lock.packages['node_modules/' + name];
-            assert.equal(p.version, '1.58.2');
-            assert.equal(p.integrity, integrity);
-            assert.equal(p.resolved, 'https://registry.npmjs.org/' + name + '/-/' + name + '-1.58.2.tgz');
+          for(const [n,h] of Object.entries(pins)){
+            const p=lock.packages['node_modules/'+n];assert.equal(p.version,'1.58.2');assert.equal(p.integrity,h);
+            assert.equal(p.resolved,'https://registry.npmjs.org/'+n+'/-/'+n+'-1.58.2.tgz');
           }
-          for (const [path,p] of Object.entries(lock.packages)) {
-            if (!path) continue;
-            assert(path === 'node_modules/playwright' || path === 'node_modules/playwright-core' || (path === 'node_modules/fsevents' && p.optional), 'unexpected dependency');
-          }
-          console.log('W18_LOCK_OK', JSON.stringify(expected));
-          JS
+          for(const [p,d] of Object.entries(lock.packages)) if(p) assert(p==='node_modules/playwright'||p==='node_modules/playwright-core'||(p==='node_modules/fsevents'&&d.optional));
+          LOCK
           npm ci --ignore-scripts --omit=optional --no-audit --no-fund --registry=https://registry.npmjs.org
-          node -e 'for (const n of ["playwright","playwright-core"]) { const v=require(n+"/package.json").version; if(v!=="1.58.2") process.exit(1); console.log(n,v); }'
-      - name: Install official browser and supported runner dependencies
-        shell: bash
-        run: |
-          set -euo pipefail
-          cd "$RUNNER_TEMP/w18-probe"
+          node -e 'for(const n of ["playwright","playwright-core"])if(require(n+"/package.json").version!=="1.58.2")process.exit(1)'
           unset PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD
           node node_modules/playwright/cli.js install webkit
-      - name: Test the frozen published game experiment without a camera
+      - name: Verify exact bytes and run isolated no-camera practice scenarios
         shell: bash
         run: |
           set -euo pipefail
-          cd "$RUNNER_TEMP/w18-probe"
-          node <<'JS'
-          const {webkit} = require('playwright');
-          const crypto = require('node:crypto');
-          const os = require('node:os');
-          const base = 'https://hzp15abc-collab.github.io/my-first-website/ultral-man/g1b/';
-          const manifest = {"NOTICE.txt":[3426,"90d5f9d4c60160b75b1a012b56142003105b78402289e7181ddf5c8259d4dc95"],"app.mjs":[36718,"6546c8f95b1bef623b46cd3bc6a1aeeea8a199978cf4b7315f8a4a5521a2be7d"],"frozen-config.json":[2813,"4c05d393824cea6c07bfec7a9f16fc746c1e90332c552a94c07fa8bfec096e88"],"group1-shard1of2.bin":[4194304,"b42c3232bf13b0efc691d3f0693dd3fc74404f709b1deee0a271828af6dbbea2"],"group1-shard2of2.bin":[455912,"8253ab965aa3122c08f331777ca395ce9ca19bb9e7cb278b99de1c46dbdeb6dc"],"index.html":[8797,"69be02d5ea9ff4d06ccddc8a3489c59d5d17d9e8051d2c57e0578caa5e7095e8"],"licenses/babylonjs-core-LICENSE.txt":[9226,"9362ea9ea17cb221a20cbbd63f404710834cc273d2a9a7b60314fd68ab702cd6"],"licenses/babylonjs-core-NOTICE.txt":[793,"7f85d099ce3c6e1900a45ee8d5b8fa405e760c746af687b3ee2081416e48f183"],"licenses/babylonjs-loaders-LICENSE.txt":[9226,"9362ea9ea17cb221a20cbbd63f404710834cc273d2a9a7b60314fd68ab702cd6"],"licenses/core-js-LICENSE.txt":[1064,"66c014a988c01fdfd53ea344563c0aca795b321c66fe619a0cf40049fe0912de"],"licenses/draco-LICENSE.txt":[11556,"5ad8c213095c573921d7388edf93f6a9f54490b8ebf3b165ae8ef1947cf70846"],"licenses/long-LICENSE.txt":[11560,"3ddf9be5c28fe27dad143a5dc76eea25222ad1dd68934a047064e56ed2fa40c5"],"licenses/meshoptimizer-LICENSE.txt":[1086,"9d665b55ed2643c4fc86594749427b031c7b3367e11760a73c6dc69c415b2d3f"],"licenses/pose-detection-LICENSE.txt":[11357,"58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd"],"licenses/regenerator-runtime-LICENSE.txt":[1080,"51887a3d47051ac2fce1210562e5b9fe0830a8a8fabeb272c2d586eeb18a05fd"],"licenses/seedrandom-LICENSE.txt":[1079,"7500bc57d010cde21006d88014d7191f36be1750894bfc4a01ce3844f1f9af2e"],"licenses/tfjs-LICENSE.txt":[11358,"cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"],"licenses/tfjs-layers-LICENSE.txt":[13216,"a79c269bc0e74de72571cea54c5f92ed74cbc6e8d1250a9fdb40357383d9dc4b"],"licenses/three-LICENSE.txt":[1081,"8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc"],"licenses/tslib-CopyrightNotice.txt":[822,"da16ddb65f8ca390998fb99223d0112498b56b45784d00afd77ff8ce1ac4de8b"],"licenses/tslib-LICENSE.txt":[655,"210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751"],"model.json":[168013,"c65a3447162efa0c42af29498a4b151f4415b36ff3ae6fae2b28a32e840dcbfb"],"pose-detection.min.js":[72653,"eedb38254421de21571e88db202382104b98f36de221a94f956d7bd01f43abcd"],"scene.glb":[693828,"9a73e9b020a4e8e4672cc2a8dbbf30029bcde6cd0a468402a4fde729f26a1d53"],"style.css":[6552,"3c53b0307e33fa5663830a826658aea2aa9bb122111bb6bd52b8d1279025c601"],"t1.bundle.js":[623952,"40fae149dfb25bea6c81763178a5272a92f96a9a126ce070b4d810eb6ba09358"],"t1.bundle.js.LEGAL.txt":[188,"cc7cc7e2f53d5db0235ab2226e85fc6e91655161573b39813b41bb00e5919674"],"t2.bundle.js":[2851741,"e97554350679c9b38292adc2f31be2203ed01db7a4035ba910380f15ad13b133"],"tf.min.js":[1469833,"3daeec03303a884a0c1b3314a1dffad572c402ec941ee3638e9b9d64e450964b"]};
-          const sha = b => crypto.createHash('sha256').update(b).digest('hex');
-          const metadata = {scope:'frozen W9 proxy test only, not iPhone or game acceptance',runId:process.env.GITHUB_RUN_ID,sha:process.env.GITHUB_SHA,runner:process.env.RUNNER_OS,arch:process.arch,osRelease:os.release(),playwright:require('playwright/package.json').version,expectedBuild:'w8-g1b-c1a817371fcc1b25',manifestCount:Object.keys(manifest).length};
-          const pairs = [['T1','render'],['T2','render'],['T1','synthetic'],['T2','synthetic']];
-          const classify = u => {
-            if (u === base) return 'index.html';
-            if (!u.startsWith(base)) return null;
-            const path=u.slice(base.length);
-            return Object.hasOwn(manifest,path) ? path : null;
-          };
-          const result = {...metadata, cases:[], halted:false};
-          async function test(browser,candidate,mode) {
-            const out={candidate,mode,protocol:'quick',requests:[],responses:[],requestFailures:[],pageErrors:[],consoleErrors:[],violations:[],guard:null,report:null};
-            const pending=[];
-            const requestIds=new Map();let nextId=0;
-            let context,page;
-            let deadline=0;
-            function note(s){out.violations.push(String(s).slice(0,500));}
-            function register(req){
-              if(requestIds.has(req))return requestIds.get(req);
-              const p=classify(req.url()),method=req.method(),id=++nextId;
-              requestIds.set(req,id);out.requests.push({id,path:p||'(unlisted URL)',method,redirect:!!req.redirectedFrom()});
-              if(!p||method!=='GET'||req.redirectedFrom())note('unexpected request or redirect '+method+' '+(p||'(unlisted URL)'));
-              return id;
+          cd "$RUNNER_TEMP/w24-probe"
+          node <<'TEST'
+          const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),http=require('node:http');
+          const {webkit}=require('playwright');
+          const manifest={"art/art-manifest.json":[16097,"eb51368cfc2934cf63c7bd8662189466b9e357d54f80405c04fbcc372743d7da"],"art/audio/friend-ready.wav":[49438,"277ad33903c96f0cd5c9256ee67e8fd0b02ae5f25a920a92123a75b70fafa50c"],"art/audio/light-ready.wav":[39734,"0120e1f535d730f1a5f808e9bfea6bf97450c15fe0d4898beb77e65dc2aeafb5"],"art/audio/round-success.wav":[68840,"6fdefde86f439ad98e1379b47e421a3664a84e74646211c9e3d27e3dc8a83ff5"],"art/audio/shield-ready.wav":[43262,"f4a863653434e2e945a928d62769b8d7c4f2b201172baf1ec3742536253ffd5d"],"art/scenes/dawn-blob-dawn.glb":[698116,"97ccfb0c8945089b9afce5356e9f1b25404c847a8d40c65733ad2e052e0254d4"],"art/scenes/dawn-blob-sunset.glb":[698116,"97de29d37db2e4395a6559e5efdf06fb3accb52d3f8bfd8b8cd67a27330d2c29"],"art/scenes/dawn-cloud-dawn.glb":[698000,"5c1b1a438d5fdb86f8af164f2b312fd94ae1aeecf3962b09e71aaf474e135034"],"art/scenes/dawn-cloud-sunset.glb":[698000,"06681375220b825b88657a704d8d0aa895563c132cebbde18c7c6790e028e855"],"art/scenes/star-blob-dawn.glb":[698260,"338c6fb45ec2074ca42aefa48fd3b3ab18cddab8332e970ff58faaafcd3fa725"],"art/scenes/star-blob-sunset.glb":[698260,"e2e32b7b8edd858ff81c7642edddfbc508b922243f116e921991ce733e7d3dbf"],"art/scenes/star-cloud-dawn.glb":[698140,"9d28e1c0cbe036b5dd75d8ce73bfaffb692ca79014eed806c12f3fa647a6c920"],"art/scenes/star-cloud-sunset.glb":[698144,"d1d46ea62ec5b13b0b6a117453c269c2f41b3cd14a789f791290b62d4f9286ef"],"audio.mjs":[2303,"21f8711fdcd4e818058c15e9d7b1a39cd712c79fb0d8b30f1004b59ba0942386"],"controller.mjs":[6954,"7bac08763d1f3a64e63630d51d73b7e76d2fd36b4233122f9299b6add320a6c7"],"experience.mjs":[11502,"dea51c1f10d05b9efcad542f38bbb647a758a9d1e3f7b457ecbc5453555a23f9"],"frozen-config.json":[2813,"4c05d393824cea6c07bfec7a9f16fc746c1e90332c552a94c07fa8bfec096e88"],"group1-shard1of2.bin":[4194304,"b42c3232bf13b0efc691d3f0693dd3fc74404f709b1deee0a271828af6dbbea2"],"group1-shard2of2.bin":[455912,"8253ab965aa3122c08f331777ca395ce9ca19bb9e7cb278b99de1c46dbdeb6dc"],"index.html":[7158,"5a811b4a72e7505f28ab8787dbbbdd5f2b60be0b9ab97f1e3aec67ecc7b4964d"],"licenses/babylonjs-core-LICENSE.txt":[9226,"9362ea9ea17cb221a20cbbd63f404710834cc273d2a9a7b60314fd68ab702cd6"],"licenses/babylonjs-core-NOTICE.txt":[793,"7f85d099ce3c6e1900a45ee8d5b8fa405e760c746af687b3ee2081416e48f183"],"licenses/babylonjs-loaders-LICENSE.txt":[9226,"9362ea9ea17cb221a20cbbd63f404710834cc273d2a9a7b60314fd68ab702cd6"],"licenses/core-js-LICENSE.txt":[1064,"66c014a988c01fdfd53ea344563c0aca795b321c66fe619a0cf40049fe0912de"],"licenses/draco-LICENSE.txt":[11556,"5ad8c213095c573921d7388edf93f6a9f54490b8ebf3b165ae8ef1947cf70846"],"licenses/long-LICENSE.txt":[11560,"3ddf9be5c28fe27dad143a5dc76eea25222ad1dd68934a047064e56ed2fa40c5"],"licenses/meshoptimizer-LICENSE.txt":[1086,"9d665b55ed2643c4fc86594749427b031c7b3367e11760a73c6dc69c415b2d3f"],"licenses/pose-detection-LICENSE.txt":[11357,"58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd"],"licenses/regenerator-runtime-LICENSE.txt":[1080,"51887a3d47051ac2fce1210562e5b9fe0830a8a8fabeb272c2d586eeb18a05fd"],"licenses/seedrandom-LICENSE.txt":[1079,"7500bc57d010cde21006d88014d7191f36be1750894bfc4a01ce3844f1f9af2e"],"licenses/tfjs-layers-LICENSE.txt":[13216,"a79c269bc0e74de72571cea54c5f92ed74cbc6e8d1250a9fdb40357383d9dc4b"],"licenses/tfjs-LICENSE.txt":[11358,"cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"],"licenses/three-LICENSE.txt":[1081,"8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc"],"licenses/tslib-CopyrightNotice.txt":[822,"da16ddb65f8ca390998fb99223d0112498b56b45784d00afd77ff8ce1ac4de8b"],"licenses/tslib-LICENSE.txt":[655,"210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751"],"model.json":[168013,"c65a3447162efa0c42af29498a4b151f4415b36ff3ae6fae2b28a32e840dcbfb"],"NOTICE.txt":[3426,"90d5f9d4c60160b75b1a012b56142003105b78402289e7181ddf5c8259d4dc95"],"pose-detection.min.js":[72653,"eedb38254421de21571e88db202382104b98f36de221a94f956d7bd01f43abcd"],"scene.glb":[693828,"9a73e9b020a4e8e4672cc2a8dbbf30029bcde6cd0a468402a4fde729f26a1d53"],"style.css":[14446,"7a6111021d496bb1173371019eaf6ec9a32b3b2ef587196e7f02cc3f328826f4"],"t1.bundle.js":[626983,"280db4f5ec5f66be2cac1cf36afc4f5ca81cd378a2a7c082db226d6a5819584c"],"t1.bundle.js.LEGAL.txt":[188,"cc7cc7e2f53d5db0235ab2226e85fc6e91655161573b39813b41bb00e5919674"],"t2.bundle.js":[2854869,"3ab4828ff867b1738f8885eeb5fef3d86bcea56b0b3045c3fb5e93bbd2039014"],"tf.min.js":[1469833,"3daeec03303a884a0c1b3314a1dffad572c402ec941ee3638e9b9d64e450964b"],"visual.mjs":[1406,"b0b5c3795df8abef4fc7fd50a49f3f010704e255ba01a9ab45c0f679bf0d60c3"],"w10/logic/city-guardian.mjs":[6887,"e835136d7a8145b87193aee297cb869ef15d8c97761b25acc502a16fd570a16b"],"w11/gate.mjs":[4481,"9531b81e67a9bc4091d54c7243ba7577b945298281d9b29f417147a7731a691b"],"W20-NOTICE.txt":[507,"489fa7ddc86b8088cab62b111b6761c6a8868e47ce5d1eadb270a542f559ced3"]};
+          const runtime=new Set(["art/art-manifest.json","art/audio/friend-ready.wav","art/audio/light-ready.wav","art/audio/round-success.wav","art/audio/shield-ready.wav","art/scenes/dawn-blob-dawn.glb","art/scenes/dawn-blob-sunset.glb","art/scenes/dawn-cloud-dawn.glb","art/scenes/dawn-cloud-sunset.glb","art/scenes/star-blob-dawn.glb","art/scenes/star-blob-sunset.glb","art/scenes/star-cloud-dawn.glb","art/scenes/star-cloud-sunset.glb","audio.mjs","controller.mjs","experience.mjs","frozen-config.json","index.html","style.css","t1.bundle.js","t2.bundle.js","visual.mjs","w10/logic/city-guardian.mjs","w11/gate.mjs"]);
+          const root=path.join(process.env.GITHUB_WORKSPACE,'ci-test','w23-practice');
+          const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+          const docs=new Map(), found=[];
+          function walk(dir,prefix=''){
+            for(const e of fs.readdirSync(dir,{withFileTypes:true})){
+              const f=prefix+e.name,p=path.join(dir,e.name);
+              assert(!e.isSymbolicLink(),'symlink forbidden');
+              if(e.isDirectory())walk(p,f+'/');else{assert(e.isFile());found.push(f);}
             }
-            async function state() {
-              return page.evaluate(()=>({
-                guard:window.__w19CameraGuard||null,
-                source:document.querySelector('#source')?.textContent,
-                consentDisabled:document.querySelector('#consent')?.disabled,
-                consentChecked:document.querySelector('#consent')?.checked,
-                candidate:document.querySelector('#candidate')?.value,
-                mode:document.querySelector('#mode')?.value,
-                protocol:document.querySelector('#protocol')?.value,
-                width:document.querySelector('#stage')?.width,
-                height:document.querySelector('#stage')?.height,
-                streamPresent:!!document.querySelector('#camera')?.srcObject,
-                status:document.querySelector('#status')?.textContent,
-                frame:document.querySelector('#frame-count')?.textContent,
-                infer:document.querySelector('#infer-count')?.textContent,
-                report:document.querySelector('#report')?.textContent
-              }));
+          }
+          walk(root);
+          assert.deepEqual(found.sort(),Object.keys(manifest).sort());
+          for(const [p,[size,h]] of Object.entries(manifest)){
+            const b=fs.readFileSync(path.join(root,p));assert.equal(b.length,size);assert.equal(hash(b),h);docs.set(p,b);
+          }
+          assert.equal(Object.values(manifest).reduce((s,[n])=>s+n,0),16486032);
+          const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.glb':'model/gltf-binary','.wav':'audio/wav'};
+          let active=null,origin,halt=false;
+          const violation=()=>{halt=true;if(active)active.violations++};
+          const server=http.createServer((req,res)=>{
+            const f=req.url?.startsWith('/')?req.url.slice(1):'';
+            if(!active||req.method!=='GET'||!runtime.has(f)||!docs.has(f)||req.headers.host!==new URL(origin).host){
+              violation();res.writeHead(403,{'Connection':'close'});res.end();return;
             }
-            function guardOK(s) { return s.guard?.installed===true && s.guard.calls===0 && s.consentDisabled===true && s.consentChecked===false && !s.streamPresent; }
-            try {
-              context=await browser.newContext({viewport:{width:1280,height:720},serviceWorkers:'block',permissions:[]});
+            const b=docs.get(f);active.server[f]=(active.server[f]||0)+1;
+            res.writeHead(200,{'Content-Type':types[path.extname(f)],'Content-Length':b.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
+            res.end(b);
+          });
+          const result={scope:'W23 local loopback anonymous touch practice only',cases:[]};
+          function classify(u){
+            if(!u.startsWith(origin+'/'))return null;
+            const q=u.slice(origin.length+1);return runtime.has(q)?q:null;
+          }
+          async function trial(browser,engine){
+            const out={engine,pass:false,violations:0,requestFailures:0,pageErrors:0,consoleErrors:0,server:{},requested:{},verified:{},checks:{},notRequested:[]};active=out;
+            const pending=[],reqs=new Map();
+            let context,page,deadline=Date.now()+120000;
+            const remain=(cap=10000)=>{if(halt)throw Error('safety/identity stop');const n=deadline-Date.now();if(n<=0)throw Error('case deadline');return Math.min(n,cap)};
+            const mark=(id,ok)=>{out.checks[id]=!!ok;assert(ok,id)};
+            const register=req=>{
+              if(reqs.has(req))return reqs.get(req);
+              const f=classify(req.url()),ok=!!f&&req.method()==='GET'&&!req.redirectedFrom();
+              const x={f,ok,done:false};reqs.set(req,x);
+              if(!ok)violation();else out.requested[f]=(out.requested[f]||0)+1;
+              return x;
+            };
+            async function state(){
+              return page.evaluate(()=>{
+                const $=id=>document.getElementById(id),s=window.__w24Observe,c=$('scene'),rect=e=>e.getBoundingClientRect().toJSON();
+                return {progress:Number($('progress-count').textContent),round:Number($('round').textContent),stars:Number($('total-stars').textContent),
+                  time:$('timebar').value,title:$('goal-title').textContent,source:document.querySelector('.mode-pill').textContent,
+                  active:document.querySelector('[data-goal].active')?.dataset.goal,roundStars:document.querySelectorAll('#stars .earned').length,
+                  status:$('visual-status').textContent,visualError:$('visual-status').classList.contains('is-error'),
+                  mediaGuard:s.guard,cameraCalls:s.cameraCalls,gl:s.gl,csp:s.csp,media:document.querySelectorAll('video').length,
+                  streams:[...document.querySelectorAll('audio,video')].filter(e=>e.srcObject).length,
+                  canvas:{w:c.width,h:c.height,box:rect(c)},stage:rect($('stage')),guide:rect($('goal-hint')),
+                  rotate:getComputedStyle(document.querySelector('.rotate-hint')).display,
+                  viewport:{w:innerWidth,h:innerHeight},scroll:scrollY,muted:$('mute').getAttribute('aria-pressed')};
+              });
+            }
+            async function guard(){
+              const s=await state();if(!s.mediaGuard||s.cameraCalls||s.media||s.streams||s.csp){violation();throw Error('media/CSP stop');}
+              if(halt)throw Error('network/identity stop');return s;
+            }
+            async function click(sel){await guard();await page.locator(sel).click({timeout:remain()});return guard();}
+            async function wait(fn,args,cap=10000){await page.waitForFunction(fn,args,{timeout:remain(cap)});return guard();}
+            async function step(name,pred){const s=await guard();mark(name,pred(s));return s;}
+            try{
+              context=await browser.newContext({viewport:{width:960,height:540},serviceWorkers:'block',permissions:[]});
               await context.addInitScript(()=>{
-                const evidence={installed:false,calls:0};Object.defineProperty(window,'__w19CameraGuard',{value:evidence});
-                try {
-                  const md=navigator.mediaDevices;
-                  if(!md||typeof md.getUserMedia!=='function')return;
-                  const deny=()=>{evidence.calls++;return Promise.reject(new DOMException('Camera deliberately disabled for anonymous CI','NotAllowedError'));};
+                const s={guard:false,cameraCalls:0,csp:0,gl:{contexts:0,draws:0,observed:false}};
+                Object.defineProperty(window,'__w24Observe',{value:s});
+                addEventListener('securitypolicyviolation',()=>s.csp++);
+                try{
+                  const md=navigator.mediaDevices;if(!md||typeof md.getUserMedia!=='function')return;
+                  const deny=()=>{s.cameraCalls++;return Promise.reject(new DOMException('Media disabled for anonymous CI','NotAllowedError'));};
                   Object.defineProperty(md,'getUserMedia',{value:deny,configurable:false,writable:false});
-                  evidence.installed=md.getUserMedia===deny;
+                  if(typeof md.getDisplayMedia==='function')Object.defineProperty(md,'getDisplayMedia',{value:deny,configurable:false,writable:false});
+                  for(const k of ['getUserMedia','webkitGetUserMedia','mozGetUserMedia'])if(typeof navigator[k]==='function')Object.defineProperty(navigator,k,{value:deny,configurable:false,writable:false});
+                  s.guard=md.getUserMedia===deny;
+                  const original=HTMLCanvasElement.prototype.getContext,seen=new WeakSet();
+                  HTMLCanvasElement.prototype.getContext=function(type,...args){
+                    const gl=original.call(this,type,...args);
+                    if(gl&&['webgl','webgl2','experimental-webgl'].includes(type)&&this.id==='scene'&&!seen.has(gl)){
+                      seen.add(gl);s.gl.contexts++;
+                      for(const n of ['drawArrays','drawElements','drawArraysInstanced','drawElementsInstanced']){
+                        if(typeof gl[n]!=='function')continue;const method=gl[n];
+                        gl[n]=function(...a){const r=method.apply(this,a);s.gl.draws++;return r;};
+                        if(gl[n]!==method)s.gl.observed=true;
+                      }
+                    }
+                    return gl;
+                  };
                 }catch{}
               });
-              context.on('request',req=>register(req));
-              context.on('requestfailed',req=>{const id=register(req);const path=classify(req.url());out.requestFailures.push({id,path:path||'(unlisted URL)',failure:req.failure()?.errorText||'unknown'});note('request failed '+(path||'(unlisted URL)'));});
+              context.on('request',register);
+              context.on('requestfailed',r=>{register(r);out.requestFailures++;});
+              context.on('response',r=>{
+                const x=register(r.request());
+                if(!x.ok)return;
+                pending.push((async()=>{try{
+                  const b=await r.body(),[size,h]=manifest[x.f];
+                  if(x.done||r.status()!==200||b.length!==size||hash(b)!==h){violation();return;}
+                  x.done=true;out.verified[x.f]=(out.verified[x.f]||0)+1;
+                }catch{violation();}})());
+              });
               await context.route('**/*',async route=>{
-                const req=route.request(), p=classify(req.url()), method=req.method();register(req);
-                if(!p||method!=='GET'||req.redirectedFrom()){await route.abort();return;}
-                await route.continue();
+                const x=register(route.request());
+                if(!x.ok||halt){await route.abort();return;}await route.continue();
               });
               page=await context.newPage();
-              page.on('dialog',d=>{note('unexpected dialog '+d.type());d.dismiss().catch(()=>{});});
-              page.on('pageerror',e=>out.pageErrors.push(String(e).slice(0,500)));
-              page.on('console',m=>{if(m.type()==='error'&&out.consoleErrors.length<30)out.consoleErrors.push(m.text().slice(0,500));});
-              context.on('response',res=>{
-                const path=classify(res.url());
-                const id=requestIds.get(res.request());
-                if(!path||id===undefined){note('unlisted or unmatched response');return;}
-                if(res.status()>=300&&res.status()<400)note('unexpected redirect response '+path);
-                pending.push((async()=>{
-                  try{
-                    const b=await res.body();const actual=[b.length,sha(b)];const ok=res.status()===200&&actual[0]===manifest[path][0]&&actual[1]===manifest[path][1];
-                    out.responses.push({id,path,status:res.status(),bytes:actual[0],sha256:actual[1],ok});
-                    if(!ok)note('response identity mismatch '+path);
-                  }catch(e){note('response identity unreadable '+path);out.responses.push({id,path,status:res.status(),ok:false,error:String(e).slice(0,300)});}
-                })());
-              });
-              await page.goto(base,{waitUntil:'load',timeout:20000});
-              await Promise.all(pending);
-              if(out.violations.length)throw Error('identity/network violation before interaction');
-              await page.locator('#candidate').selectOption(candidate,{timeout:5000});
-              await page.locator('#mode').selectOption(mode,{timeout:5000});
-              await page.locator('#protocol').selectOption('quick',{timeout:5000});
-              const before=await state();
-              out.guard=before.guard;
-              out.before={candidate:before.candidate,mode:before.mode,protocol:before.protocol,consentDisabled:before.consentDisabled,consentChecked:before.consentChecked,width:before.width,height:before.height};
-              if(!guardOK(before)||before.candidate!==candidate||before.mode!==mode||before.protocol!=='quick'||before.width!==960||before.height!==540){note('unsafe or mismatched test UI');throw Error('preflight guard or UI mismatch');}
-              if(!out.responses.some(x=>x.path==='index.html'&&x.ok)||!out.responses.some(x=>x.path==='app.mjs'&&x.ok)) {note('required startup identities unverified');throw Error('startup identity missing');}
-              deadline=Date.now()+70000;
-              await page.locator('#start').click({timeout:5000});
-              while(Date.now()<deadline) {
-                const s=await state();
-                out.guard=s.guard;out.source=s.source;out.status=s.status;out.frameText=s.frame;out.inferText=s.infer;out.streamPresent=s.streamPresent;
-                if(!guardOK(s)){note('camera guard/consent/stream violated');break;}
-                if(out.violations.length)break;
-                try{const parsed=JSON.parse(s.report);if(parsed.stopReason){out.report=parsed;break;}}catch{}
-                await page.waitForTimeout(250);
+              page.on('pageerror',()=>out.pageErrors++);
+              page.on('console',m=>{if(m.type()==='error')out.consoleErrors++;});
+              page.on('dialog',d=>{violation();d.dismiss().catch(()=>{});});
+              await page.goto(origin+'/index.html',{waitUntil:'load',timeout:remain(20000)});
+              async function drawReady(previous=0){
+                return wait(prev=>window.__w24Observe.gl.draws>prev&&document.querySelector('#visual-status').hidden,previous,15000);
               }
-              if(!out.report&&!out.violations.length)out.timeout=true;
-              await Promise.all(pending);
-            } catch(e){out.error=String(e).slice(0,500);}
+              await drawReady();
+              let s=await guard();mark('real-app-webgl-draw',s.gl.contexts>0&&s.gl.observed&&s.gl.draws>0&&!s.visualError&&s.canvas.w===960&&s.canvas.h===540);
+              mark('practice-label',s.source.includes('无相机'));
+              if(engine==='T2'){
+                const before=s.gl.draws;await page.locator('#engine').selectOption('T2',{timeout:remain()});
+                await wait(()=>document.querySelector('#visual-status').hidden&&document.querySelector('#engine').value==='T2',null,15000);
+                await drawReady(before);s=await guard();mark('selected-t2-context',s.gl.contexts>=2);
+              }else mark('selected-t1-context',await page.locator('#engine').inputValue()==='T1');
+              // All input is genuine UI clicks; no debug controller, clock, model or canvas replacement.
+              await click('#start');await step('round-start',s=>s.round===1&&s.progress===0&&s.active==='light');
+              await click('[data-action=light]');await step('unarmed-no-credit',s=>s.progress===0);
+              await click('[data-action=neutral]');await click('[data-action=light]');
+              await step('light-credit',s=>s.progress===1&&s.roundStars===1&&s.active==='shield');
+              await click('#pause');const paused=await guard();
+              await page.waitForTimeout(Math.min(900,remain()));const still=await guard();
+              mark('manual-pause-clock',still.title==='先休息一下'&&Math.abs(still.time-paused.time)<=1&&await page.locator('#resume').isVisible());
+              await click('#resume');
+              await click('[data-action=shield]');await step('resume-rearm-required',s=>s.progress===1);
+              await click('[data-action=neutral]');await click('[data-action=shield]');await step('shield-credit',s=>s.progress===2&&s.roundStars===2);
+              await click('[data-action=neutral]');await click('[data-action=restore]');
+              await step('successful-round',s=>s.progress===3&&s.roundStars===3&&s.stars===3&&s.title==='守护完成！');
+              await click('#next');await step('next-round',s=>s.round===2&&s.progress===0&&s.stars===3);
+              await click('[data-action=neutral]');await click('[data-action=light]');
+              // Observe the unchanged real countdown (not accelerated or injected).
+              await wait(()=>!document.getElementById('retry').hidden,null,remainingForBreak());
+              await step('real-time-break',s=>s.time===0&&s.progress===1&&s.title==='今天也很棒！');
+              await click('#retry');await step('retry-keeps-progress',s=>s.round===2&&s.progress===1&&s.time>0);
+              await click('[data-action=neutral]');await click('[data-action=shield]');
+              await click('[data-action=neutral]');await click('[data-action=restore]');
+              await step('retry-success',s=>s.progress===3&&s.stars===6);
+              await click('#restart');await step('restart-clears-total',s=>s.round===1&&s.stars===0&&s.progress===0);
+              await click('#mute');await step('mute-reachable',s=>s.muted==='true');
+              mark('volume-reachable',await page.locator('#volume').isEnabled());
+              // Real viewport observations, not iPhone safe-area simulation.
+              await page.setViewportSize({width:844,height:390});
+              await page.waitForTimeout(Math.min(250,remain()));
+              await page.evaluate(()=>window.scrollTo(0,0)); // ordinary layout observation only, not game injection
+              const inside=(b,v)=>b&&b.width>0&&b.height>0&&b.left>=-1&&b.right<=v.w+1&&b.top>=-1&&b.bottom<=v.h+1;
+              const controlRects=()=>page.evaluate(()=>Object.fromEntries(['pause','resume','stop','volume','mute','goal-hint'].map(id=>{
+                const el=document.getElementById(id);return [id,{rect:el.getBoundingClientRect().toJSON(),hidden:el.hidden,disabled:!!el.disabled}];
+              })));
+              const l=await guard();out.shortLayout={canvas:l.canvas.box,stage:l.stage,guide:l.guide,viewport:l.viewport,controls:await controlRects()};
+              mark('short-stage-visible',l.canvas.box.width>0&&l.canvas.box.top>=-1&&l.canvas.box.bottom<=l.viewport.h+1&&Math.abs(l.canvas.box.width/l.canvas.box.height-16/9)<0.03);
+              mark('short-guide-not-overlaid',l.guide.top>=l.canvas.box.bottom-2);
+              mark('short-guide-width',l.guide.width>0&&l.guide.left>=-1&&l.guide.right<=l.viewport.w+1);
+              await page.locator('#goal-hint').scrollIntoViewIfNeeded({timeout:remain()});
+              const guide=await guard();out.shortLayout.guideAfterScroll=guide.guide;
+              mark('short-guide-reachable',inside(guide.guide,guide.viewport));
+              await page.evaluate(()=>window.scrollTo(0,0));
+              await click('#pause');const pausedShort=await guard();out.shortLayout.paused=await controlRects();
+              mark('short-resume-reachable',await page.locator('#resume').isVisible()&&pausedShort.title==='先休息一下');
+              await page.locator('#resume').scrollIntoViewIfNeeded({timeout:remain()});
+              out.shortLayout.resumeAfterScroll=(await controlRects()).resume;
+              mark('short-resume-in-viewport',inside(out.shortLayout.resumeAfterScroll.rect,(await guard()).viewport));
+              await click('#resume');
+              // Observe a bounded actual keyboard traversal without imposing unreviewed focus-order thresholds.
+              out.shortLayout.tabOrder=[];
+              for(let i=0;i<7;i++){
+                await page.keyboard.press('Tab');
+                out.shortLayout.tabOrder.push(await page.evaluate(()=>{
+                  const el=document.activeElement;return {id:el.id||el.dataset.action||el.tagName,rect:el.getBoundingClientRect().toJSON(),scroll:scrollY};
+                }));
+              }
+              out.shortLayout.focusScope='seven ordinary Tabs from resumed control; full accessibility and real iPhone safe-area UNVERIFIED';
+              await page.setViewportSize({width:390,height:844});
+              await page.waitForTimeout(Math.min(250,remain()));
+              await page.evaluate(()=>window.scrollTo(0,0));
+              const p=await guard();out.portraitLayout={canvas:p.canvas.box,stage:p.stage,guide:p.guide,viewport:p.viewport,controls:await controlRects(),scope:'ordinary WebKit viewport, not iPhone hardware'};
+              mark('portrait-rotate-hint',p.rotate!=='none'&&p.canvas.box.left>=-1&&p.canvas.box.right<=p.viewport.w+1);
+              await click('#stop');await step('stop-exit',s=>s.title==='练习结束啦');
+              mark('restart-available',await page.locator('#start').isVisible());
+              await Promise.all(pending);await guard();
+              function remainingForBreak(){return remain(35000);}
+              out.gl=(await state()).gl;
+            }catch(e){out.failure=typeof e?.message==='string'&&Object.keys(out.checks).length?Object.keys(out.checks).at(-1)||'case':'initialization';}
             finally{
-              if(page){try{const s=await state();out.guard=s.guard;out.streamPresent=s.streamPresent;out.finalConsentChecked=s.consentChecked;out.finalConsentDisabled=s.consentDisabled;if(!guardOK(s))note('camera guard/consent/stream at final state');}catch(e){note('final camera state unverified');}}
               if(page)await page.close().catch(()=>{});
               if(context)await context.close().catch(()=>{});
               await Promise.allSettled(pending);
-              out.checkedFiles=[...new Set(out.responses.filter(x=>x.ok).map(x=>x.path))].sort();
-              out.notRequested=Object.keys(manifest).filter(x=>!out.requests.some(r=>r.path===x)).sort();
-              const r=out.report;
-              const requestedAllVerified=out.requests.every(q=>!q.redirect&&out.responses.filter(z=>z.id===q.id&&z.ok&&z.path===q.path).length===1)&&out.requestFailures.length===0;
-              if(!requestedAllVerified)note('not all requested static resources verified');
-              if(r?.network?.cspViolations?.length)note('application reported CSP violations');
-              if(Object.keys(r?.network?.observedResourceCategories||{}).some(k=>['非同源','未列入静态清单的同源资源','无法识别的资源'].includes(k)))note('application observed resource outside its whitelist');
-              const statsOK=s=>s&&Number.isInteger(s.n)&&s.n>0&&Number.isFinite(s.p50)&&Number.isFinite(s.p95);
-              const networkOK=r?.network&&r.network.observedResourceCategories&&Array.isArray(r.network.cspViolations)&&r.network.cspViolations.length===0;
-              const inputOK=mode==='render'?r?.input==='NO_CAMERA_RENDER_ONLY':typeof r?.input==='string'&&r.input.startsWith('SYNTHETIC_CANVAS_NO_CAMERA;');
-              out.pass=!!(r&&r.candidate===candidate&&r.mode===mode&&r.protocol==='quick'&&r.completed===true&&r.stopReason==='protocol-complete'&&Number.isInteger(r.counts?.frames)&&r.counts.frames>0&&statsOK(r.frameIntervalsMs)&&networkOK&&inputOK&&(!r.errors||r.errors.length===0)&&out.violations.length===0&&!out.error&&!out.timeout&&out.pageErrors.length===0&&out.consoleErrors.length===0&&(!r.cameraDimensions)&&(!r.cameraTrackStates||r.cameraTrackStates.length===0)&&(mode==='render'?r.counts.inferences===0:(Number.isInteger(r.counts.inferences)&&r.counts.inferences>0&&statsOK(r.actualModelInferenceMs)&&r.backend==='webgl')));
-              console.log('W19_CASE '+JSON.stringify(out));
+              for(const x of reqs.values())if(!x.ok||!x.done)violation();
+              for(const f of Object.keys(out.requested))if(out.requested[f]!==out.verified[f]||out.requested[f]!==out.server[f])violation();
+              out.notRequested=Object.keys(manifest).filter(f=>!out.requested[f]).sort();
+              out.pass=!out.failure&&!out.violations&&!out.requestFailures&&!out.pageErrors&&!out.consoleErrors&&Object.values(out.checks).every(Boolean)&&out.checks['restart-available']===true;
+              console.log('W24_CASE '+JSON.stringify(out));active=null;
             }
             return out;
           }
           (async()=>{
             let browser;
-            try {
-              browser=await webkit.launch({headless:true,timeout:30000});result.browserVersion=browser.version();
-              for(const [candidate,mode] of pairs){const c=await test(browser,candidate,mode);result.cases.push({candidate,mode,pass:c.pass,frameCount:c.report?.counts?.frames,inferenceCount:c.report?.counts?.inferences,stopReason:c.report?.stopReason,violations:c.violations});if(c.violations.length){result.halted=true;break;}}
-            }catch(e){result.error=String(e).slice(0,500);}
-            finally {if(browser)await browser.close().catch(()=>{});console.log('W19_SUMMARY '+JSON.stringify(result));if(result.halted||result.error||result.cases.length!==4||result.cases.some(x=>!x.pass))process.exitCode=1;}
-          })().catch(e=>{console.error(String(e));process.exitCode=1;});
-          JS
+            try{
+              await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
+              origin='http://127.0.0.1:'+server.address().port;
+              browser=await webkit.launch({headless:true,timeout:30000});result.webkit=browser.version();result.arch=process.arch;
+              for(const engine of ['T1','T2']){if(halt)break;const r=await trial(browser,engine);result.cases.push({engine,pass:r.pass,violations:r.violations});}
+            }catch{result.infrastructureError=true;}
+            finally{if(browser)await browser.close().catch(()=>{});await new Promise(resolve=>server.close(resolve));result.halted=halt;console.log('W24_SUMMARY '+JSON.stringify(result));if(halt||result.infrastructureError||result.cases.length!==2||result.cases.some(x=>!x.pass))process.exitCode=1;}
+          })().catch(()=>{process.exitCode=1});
+          TEST
