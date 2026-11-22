@@ -85,3 +85,4 @@ d_supervisor 独立实物只读最终 W5 pack、完整 app/index/NOTICE、metafi
 | 成人真实 iPhone 相机/运行/网络/性能/完整 W3 指标 | UNVERIFIED，W6 不实施相机 |
 
 暂存前重新确认 main HEAD 与 gh-pages 不存在，逐文件/树必须与已审清单一致；远端树/blobs 实核，不凭 API 回执代替。若已审文件有改动、缺项/额外文件、分支冲突、配置未知或资源返回失败，记录 FAIL/UNVERIFIED 并停在适当门禁。确切 HTTPS 及静态资源证据通过后才可说明实验入口可访问；后续真实成人 iPhone 自愿取证，W3 门槛及 G1c 独立复验不能跳过。
+实际远端暂存独立验证 PASS（仅文件一致性）：d_supervisor 通过真实 GitHub ref/commit/recursive tree 查询核验新 gh-pages `84a2f1dc8876985fc89b28ee40e1a3e0dbd01885`、tree `fd9628884ffe7b5336818114c83e22d8b225add4` 与 29 个审核文件 path/mode/size/blob 一致，无额外路径，10,663,193 bytes，main 暂存前后 `9c24d458c27a7129494350bb0b10df26899cba2e`。总控实际匿名 GET 根和 g1b/ 都 404；线上资源/运行与所有 W3 真机门依然 UNVERIFIED。
