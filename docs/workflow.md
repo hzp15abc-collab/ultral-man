@@ -1,6 +1,6 @@
-# 工作流 · W3（REVIEWED）
+# 工作流 · W4（REVIEWED · D4 PASS）
 
-U0-03 / 2026-11-22 / L 模式。用户已批准多 Agent 监督型体系、3D 游戏及 iPhone 优先，明确选择公开开发仓库。仅公开非私人规范和合规来源索引。W1 经 D1 放行后五路 G1a 研究完成，W2 经独立 D2 放行 U1。2026-11-22 用户明确选 B 明亮动画特摄，玩法沿 U0-03 不变；W3 已经独立 D3 审核，冻结 G1b 资格预检和隔离实验协议。真机、G1c、生产及发布均未放行。
+U0-03 / 2026-11-22 / L 模式。用户已批准多 Agent 监督型体系、3D 游戏及 iPhone 优先，明确选择公开开发仓库。仅公开非私人规范和合规来源索引。W1 经 D1 放行后五路 G1a 研究完成，W2 经独立 D2 放行 U1；用户选择 B 明亮动画特摄。W3 经独立 D3 放行隔离预检与代理实验，但 T1 浏览器启动前环境权限阻塞、T2 未重复同环境失败、T3 资格硬门停止。W4 经独立 D4 复核通过，仅记录阻塞并停在等待用户明确授权隔离 HTTPS 实验入口；没有任何 G1b 性能/相机实测或 G1c 选型通过，不启动生产或发布。
 
 | 门禁 | 状态 | 放行条件 |
 |---|---|---|
@@ -10,7 +10,8 @@ U0-03 / 2026-11-22 / L 模式。用户已批准多 Agent 监督型体系、3D �
 | W2/D2 | PASS | d_supervisor 独立只读审核六份相关文档；仅放行 U1 |
 | U1 | PASS | 2026-11-22 用户明确选择 B 审美方向，玩法沿 U0-03；并非实际试玩通过 |
 | W3/D3 | PASS | d_supervisor 独立核准协议、工作单及数值硬门；仅放行 G1b 隔离预检/合规代理实验 |
-| G1b | UNVERIFIED | D3 放行且精确资产/依赖资格可核后，隔离候选实际运行；真机尚缺 |
+| G1b | UNVERIFIED / BLOCKED | T1/T2 仅资格预检及静态检查；浏览器启动失败；T3 资格 FAIL/STOP；未获运行或 iPhone 证据 |
+| W4/D4 | PASS | d_supervisor 独立只读六份证据/文档；仅允许呈交阻塞及向用户请求独立 HTTPS 实验授权 |
 | G1c/D | UNVERIFIED | 非实现者复验、择优、更新文档并独立复核 |
 | G2 | UNVERIFIED | 逐模块实际产物及独立评审 |
 | G3 | UNVERIFIED | 独立视觉/音频/体验实物审核 |
@@ -51,6 +52,14 @@ PlayCanvas standalone 与 BlazePose TFJS 保留备选，不默认加试，不凑
 
 允许先在合规本地/桌面/代理浏览器运行，清楚标识环境。iPhone 为硬门，真实用户设备验证须有用户可访问的 HTTPS 实验入口；该位置/发布范围目前未授权，不能擅自修改 Pages、其他仓库或扩大公开范围。若无合法入口/真机，则保留待验候选，不报 G1b/G1c 通过；总控向用户请求最小必要授权。G1c 仅由非实验实施者复跑并对通过所有适用硬门者择优，证据不足标 UNVERIFIED；随后文档自迭代→D 放行才进入生产。
 
+## W4 · G1b 阻塞证据及唯一下一步（待 D4）
+
+2026-11-22 实际预检：T1 Three.js 0.187.0、T2 Babylon.js core/loaders 9.37.1，均使用 TFJS 4.22.0 与 pose-detection 2.1.3、官方 MoveNet SinglePose Lightning v4；精确依赖与共同原创建模资产、合成输入、源码语法和 SHA256 检查完成。它们尚不具备真实浏览器/推理/隐私/性能/iPhone 通过证据，也不是最终许可或再分发结论。T3 MediaPipe Tasks Vision 1.2.3 SDK 静态发现自动 Google POST 遥测路径，WASM/NOTICE 署名未解决，违反资格硬门，FAIL/STOP，未执行 SDK，不把静态线索冒充运行期网络记录。
+
+证据见本地 `experiments/g1b/common/PROXY-STATUS.md`、`frozen-config.json`、T1/T2 各自锁文件及适配器/入口、共同 harness/runner。T1 的 Chromium 在页面或候选代码启动之前遇到 socket() Operation not permitted (1)，随后 SIGABRT；属于环境权限 BLOCKED，不是引擎、模型或游戏运行失败。T2 因同一环境权限不重复启动；没有 `proxy-results`、真实渲染、推理、网络、性能或真机测试数据。独立 d_supervisor 实际只读七份代码/配置与相关文档，独立复算 hash、核查无结果目录；没有独立运行复验。完整公开安全 hash 摘要见 `tests.md`，原始检查点留在隔离目录，不含个人资料。
+
+当前唯一允许的后续：W4 流程自迭代提案 → 独立 D4 审核 → 总控向用户明确请求仅在当前公开仓库下的隔离 HTTPS 实验入口（非正式游戏、非稳定版；Pages 配置和具体路径待核）。在独立 D4 和用户明确授权前，禁止任何实验提交、Pages/权限更改、外部替代执行环境或部署，保留原检查点。授权以后也不是直接发布：现有两页仅合成输入烟测，缺少真实 iPhone 自愿相机、停流和 W3 完整计量。须新工作单及独立审批，补齐真实摄像头路径、本地隐私/完整指标、精确许可/署名/NOTICE、资源白名单、最小可发布清单与哈希、部署隔离/回滚；实施后另经独立审查才可发布实验候选。任何实质改协议回 D，W3 数值硬门不降低；真实 iPhone 与 G1b/G1c 未完成时不得进入生产。
+
 ## 迭代制度
 
 每个里程碑绑定当前已审核 W revision、范围、只读基线、隔离写路径、交付证据、硬门槛、资源/失败上限。比较 2–3 个合理候选；G1b 实验前冻结相同输入/环境/场景/指标及停止条件。独立 G1c 只从全部硬门通过者择优。每项关键 Review 先归因→流程 Agent 提出递增 W revision→D 复核才派发下一任务；不先改代码后补文档。保留事实、失败和回退记录。每个失败点默认最多两次有证据的修复尝试，无新证据即停止或返回研究。
@@ -72,3 +81,7 @@ G2 里程碑：最小 3D/体感可玩切片 → 角色/场景资产 → 游戏�
 ## W3 自迭代记录（D3 已复核）
 
 2026-11-22，U1 用户明确选 B 明亮动画特摄，保留 U0-03 玩法与硬约束。流程自迭代 Agent workflow_iterate_w2 根据 U1 更新本文件及 reference-board、tests、decisions、design，提出三组隔离对照、资格预检、统一协议与建议数值阈值、真机阻塞边界。历史 W2 记录不改写。独立审核者 d_supervisor 实际全文只读 workflow.md(W3)、tests.md、reference-board.md、decisions.md、design.md、AGENTS.md、research.md 共七份，D3 PASS，仅放行 G1b 隔离依赖资格预检及符合冻结协议的代理实验。运行前记录并核对真实精确版本、锁文件、模型/GLB/hash/许可、共同配置；无法核资格或硬门失败必须停该组。冻结 tests.md 数值阈值，真实 iPhone、G1b/G1c 成绩、生产和发布仍 UNVERIFIED；禁止擅自提交实验代码、改 Pages 或权限。
+
+## W4 自迭代记录（D4 已复核）
+
+2026-11-22，流程自迭代 Agent workflow_iterate_w2 根据 G1b 环境阻塞和独立只读复核，提出本文件、decisions、tests、deployment 的 W4 记录，保留 W1–W3 及原阈值。d_supervisor 独立全文只读 workflow、decisions、tests、deployment、experiments/g1b/common/PROXY-STATUS.md、frozen-config.json 共六份，D4 PASS，仅放行阻塞报告和向用户请求当前公开仓库下的隔离 HTTPS 实验入口授权，不授权实现、改权限、提交实验、部署、复跑或生产。用户授权后仍需新工作单及独立审批真实相机/停流、完整 W3 测量、许可/白名单、最小清单/hash/回滚等；G1b/G1c、真机及所有后续门禁仍 UNVERIFIED。
