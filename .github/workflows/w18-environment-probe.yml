@@ -1,6 +1,6 @@
-# LOCAL DRAFT ONLY. D24-A does not approve insertion in a remote workflow or execution.
-# Proposed replacement of .github/workflows/w18-environment-probe.yml, solely after user consent + D24-B.
-name: W24 W23 practice trial (draft)
+# LOCAL DRAFT ONLY. D37-A does not approve remote insertion or execution.
+# W37 exact isolated synthetic model + original rule + real 3D diagnostic; D37-B required.
+name: W37 synthetic-pixel WebKit joint diagnostic
 on:
   push:
     branches: [ci/webgl-probe-w18]
@@ -8,7 +8,7 @@ on:
 permissions:
   contents: read
 jobs:
-  practice:
+  diagnostic:
     runs-on: macos-15
     timeout-minutes: 8
     env:
@@ -27,8 +27,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(uname -s)" = Darwin && test "$(uname -m)" = arm64
-          mkdir -p "$RUNNER_TEMP/w24-probe"
-          cd "$RUNNER_TEMP/w24-probe"
+          mkdir -p "$RUNNER_TEMP/w37-probe"
+          cd "$RUNNER_TEMP/w37-probe"
           npm init -y >/dev/null
           npm install --package-lock-only --ignore-scripts --omit=optional --save-exact --no-audit --no-fund --registry=https://registry.npmjs.org playwright@1.58.2 playwright-core@1.58.2
           node <<'LOCK'
@@ -47,229 +47,156 @@ jobs:
           node -e 'for(const n of ["playwright","playwright-core"])if(require(n+"/package.json").version!=="1.58.2")process.exit(1)'
           unset PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD
           node node_modules/playwright/cli.js install webkit
-      - name: Verify exact bytes and run isolated no-camera practice scenarios
+      - name: Verify exact identities and run two isolated no-camera model-renderer cases
         shell: bash
         run: |
           set -euo pipefail
-          cd "$RUNNER_TEMP/w24-probe"
+          cd "$RUNNER_TEMP/w37-probe"
           node <<'TEST'
+          // Local review template. The exact immutable buffers/manifests are embedded in the workflow.
           const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),http=require('node:http');
           const {webkit}=require('playwright');
-          const manifest={"art/art-manifest.json":[16097,"eb51368cfc2934cf63c7bd8662189466b9e357d54f80405c04fbcc372743d7da"],"art/audio/friend-ready.wav":[49438,"277ad33903c96f0cd5c9256ee67e8fd0b02ae5f25a920a92123a75b70fafa50c"],"art/audio/light-ready.wav":[39734,"0120e1f535d730f1a5f808e9bfea6bf97450c15fe0d4898beb77e65dc2aeafb5"],"art/audio/round-success.wav":[68840,"6fdefde86f439ad98e1379b47e421a3664a84e74646211c9e3d27e3dc8a83ff5"],"art/audio/shield-ready.wav":[43262,"f4a863653434e2e945a928d62769b8d7c4f2b201172baf1ec3742536253ffd5d"],"art/scenes/dawn-blob-dawn.glb":[698116,"97ccfb0c8945089b9afce5356e9f1b25404c847a8d40c65733ad2e052e0254d4"],"art/scenes/dawn-blob-sunset.glb":[698116,"97de29d37db2e4395a6559e5efdf06fb3accb52d3f8bfd8b8cd67a27330d2c29"],"art/scenes/dawn-cloud-dawn.glb":[698000,"5c1b1a438d5fdb86f8af164f2b312fd94ae1aeecf3962b09e71aaf474e135034"],"art/scenes/dawn-cloud-sunset.glb":[698000,"06681375220b825b88657a704d8d0aa895563c132cebbde18c7c6790e028e855"],"art/scenes/star-blob-dawn.glb":[698260,"338c6fb45ec2074ca42aefa48fd3b3ab18cddab8332e970ff58faaafcd3fa725"],"art/scenes/star-blob-sunset.glb":[698260,"e2e32b7b8edd858ff81c7642edddfbc508b922243f116e921991ce733e7d3dbf"],"art/scenes/star-cloud-dawn.glb":[698140,"9d28e1c0cbe036b5dd75d8ce73bfaffb692ca79014eed806c12f3fa647a6c920"],"art/scenes/star-cloud-sunset.glb":[698144,"d1d46ea62ec5b13b0b6a117453c269c2f41b3cd14a789f791290b62d4f9286ef"],"audio.mjs":[2303,"21f8711fdcd4e818058c15e9d7b1a39cd712c79fb0d8b30f1004b59ba0942386"],"controller.mjs":[6954,"7bac08763d1f3a64e63630d51d73b7e76d2fd36b4233122f9299b6add320a6c7"],"experience.mjs":[11502,"dea51c1f10d05b9efcad542f38bbb647a758a9d1e3f7b457ecbc5453555a23f9"],"frozen-config.json":[2813,"4c05d393824cea6c07bfec7a9f16fc746c1e90332c552a94c07fa8bfec096e88"],"group1-shard1of2.bin":[4194304,"b42c3232bf13b0efc691d3f0693dd3fc74404f709b1deee0a271828af6dbbea2"],"group1-shard2of2.bin":[455912,"8253ab965aa3122c08f331777ca395ce9ca19bb9e7cb278b99de1c46dbdeb6dc"],"index.html":[7158,"5a811b4a72e7505f28ab8787dbbbdd5f2b60be0b9ab97f1e3aec67ecc7b4964d"],"licenses/babylonjs-core-LICENSE.txt":[9226,"9362ea9ea17cb221a20cbbd63f404710834cc273d2a9a7b60314fd68ab702cd6"],"licenses/babylonjs-core-NOTICE.txt":[793,"7f85d099ce3c6e1900a45ee8d5b8fa405e760c746af687b3ee2081416e48f183"],"licenses/babylonjs-loaders-LICENSE.txt":[9226,"9362ea9ea17cb221a20cbbd63f404710834cc273d2a9a7b60314fd68ab702cd6"],"licenses/core-js-LICENSE.txt":[1064,"66c014a988c01fdfd53ea344563c0aca795b321c66fe619a0cf40049fe0912de"],"licenses/draco-LICENSE.txt":[11556,"5ad8c213095c573921d7388edf93f6a9f54490b8ebf3b165ae8ef1947cf70846"],"licenses/long-LICENSE.txt":[11560,"3ddf9be5c28fe27dad143a5dc76eea25222ad1dd68934a047064e56ed2fa40c5"],"licenses/meshoptimizer-LICENSE.txt":[1086,"9d665b55ed2643c4fc86594749427b031c7b3367e11760a73c6dc69c415b2d3f"],"licenses/pose-detection-LICENSE.txt":[11357,"58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd"],"licenses/regenerator-runtime-LICENSE.txt":[1080,"51887a3d47051ac2fce1210562e5b9fe0830a8a8fabeb272c2d586eeb18a05fd"],"licenses/seedrandom-LICENSE.txt":[1079,"7500bc57d010cde21006d88014d7191f36be1750894bfc4a01ce3844f1f9af2e"],"licenses/tfjs-layers-LICENSE.txt":[13216,"a79c269bc0e74de72571cea54c5f92ed74cbc6e8d1250a9fdb40357383d9dc4b"],"licenses/tfjs-LICENSE.txt":[11358,"cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"],"licenses/three-LICENSE.txt":[1081,"8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc"],"licenses/tslib-CopyrightNotice.txt":[822,"da16ddb65f8ca390998fb99223d0112498b56b45784d00afd77ff8ce1ac4de8b"],"licenses/tslib-LICENSE.txt":[655,"210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751"],"model.json":[168013,"c65a3447162efa0c42af29498a4b151f4415b36ff3ae6fae2b28a32e840dcbfb"],"NOTICE.txt":[3426,"90d5f9d4c60160b75b1a012b56142003105b78402289e7181ddf5c8259d4dc95"],"pose-detection.min.js":[72653,"eedb38254421de21571e88db202382104b98f36de221a94f956d7bd01f43abcd"],"scene.glb":[693828,"9a73e9b020a4e8e4672cc2a8dbbf30029bcde6cd0a468402a4fde729f26a1d53"],"style.css":[14446,"7a6111021d496bb1173371019eaf6ec9a32b3b2ef587196e7f02cc3f328826f4"],"t1.bundle.js":[626983,"280db4f5ec5f66be2cac1cf36afc4f5ca81cd378a2a7c082db226d6a5819584c"],"t1.bundle.js.LEGAL.txt":[188,"cc7cc7e2f53d5db0235ab2226e85fc6e91655161573b39813b41bb00e5919674"],"t2.bundle.js":[2854869,"3ab4828ff867b1738f8885eeb5fef3d86bcea56b0b3045c3fb5e93bbd2039014"],"tf.min.js":[1469833,"3daeec03303a884a0c1b3314a1dffad572c402ec941ee3638e9b9d64e450964b"],"visual.mjs":[1406,"b0b5c3795df8abef4fc7fd50a49f3f010704e255ba01a9ab45c0f679bf0d60c3"],"w10/logic/city-guardian.mjs":[6887,"e835136d7a8145b87193aee297cb869ef15d8c97761b25acc502a16fd570a16b"],"w11/gate.mjs":[4481,"9531b81e67a9bc4091d54c7243ba7577b945298281d9b29f417147a7731a691b"],"W20-NOTICE.txt":[507,"489fa7ddc86b8088cab62b111b6761c6a8868e47ce5d1eadb270a542f559ced3"]};
-          const runtime=new Set(["art/art-manifest.json","art/audio/friend-ready.wav","art/audio/light-ready.wav","art/audio/round-success.wav","art/audio/shield-ready.wav","art/scenes/dawn-blob-dawn.glb","art/scenes/dawn-blob-sunset.glb","art/scenes/dawn-cloud-dawn.glb","art/scenes/dawn-cloud-sunset.glb","art/scenes/star-blob-dawn.glb","art/scenes/star-blob-sunset.glb","art/scenes/star-cloud-dawn.glb","art/scenes/star-cloud-sunset.glb","audio.mjs","controller.mjs","experience.mjs","frozen-config.json","index.html","style.css","t1.bundle.js","t2.bundle.js","visual.mjs","w10/logic/city-guardian.mjs","w11/gate.mjs"]);
-          const root=path.join(process.env.GITHUB_WORKSPACE,'ci-test','w23-practice');
+          const candidate=[{"path":"NOTICE.txt","bytes":3426,"sha256":"90d5f9d4c60160b75b1a012b56142003105b78402289e7181ddf5c8259d4dc95"},{"path":"W20-NOTICE.txt","bytes":507,"sha256":"489fa7ddc86b8088cab62b111b6761c6a8868e47ce5d1eadb270a542f559ced3"},{"path":"art/art-manifest.json","bytes":16097,"sha256":"eb51368cfc2934cf63c7bd8662189466b9e357d54f80405c04fbcc372743d7da"},{"path":"art/audio/friend-ready.wav","bytes":49438,"sha256":"277ad33903c96f0cd5c9256ee67e8fd0b02ae5f25a920a92123a75b70fafa50c"},{"path":"art/audio/light-ready.wav","bytes":39734,"sha256":"0120e1f535d730f1a5f808e9bfea6bf97450c15fe0d4898beb77e65dc2aeafb5"},{"path":"art/audio/round-success.wav","bytes":68840,"sha256":"6fdefde86f439ad98e1379b47e421a3664a84e74646211c9e3d27e3dc8a83ff5"},{"path":"art/audio/shield-ready.wav","bytes":43262,"sha256":"f4a863653434e2e945a928d62769b8d7c4f2b201172baf1ec3742536253ffd5d"},{"path":"art/scenes/dawn-blob-dawn.glb","bytes":698116,"sha256":"97ccfb0c8945089b9afce5356e9f1b25404c847a8d40c65733ad2e052e0254d4"},{"path":"art/scenes/dawn-blob-sunset.glb","bytes":698116,"sha256":"97de29d37db2e4395a6559e5efdf06fb3accb52d3f8bfd8b8cd67a27330d2c29"},{"path":"art/scenes/dawn-cloud-dawn.glb","bytes":698000,"sha256":"5c1b1a438d5fdb86f8af164f2b312fd94ae1aeecf3962b09e71aaf474e135034"},{"path":"art/scenes/dawn-cloud-sunset.glb","bytes":698000,"sha256":"06681375220b825b88657a704d8d0aa895563c132cebbde18c7c6790e028e855"},{"path":"art/scenes/star-blob-dawn.glb","bytes":698260,"sha256":"338c6fb45ec2074ca42aefa48fd3b3ab18cddab8332e970ff58faaafcd3fa725"},{"path":"art/scenes/star-blob-sunset.glb","bytes":698260,"sha256":"e2e32b7b8edd858ff81c7642edddfbc508b922243f116e921991ce733e7d3dbf"},{"path":"art/scenes/star-cloud-dawn.glb","bytes":698140,"sha256":"9d28e1c0cbe036b5dd75d8ce73bfaffb692ca79014eed806c12f3fa647a6c920"},{"path":"art/scenes/star-cloud-sunset.glb","bytes":698144,"sha256":"d1d46ea62ec5b13b0b6a117453c269c2f41b3cd14a789f791290b62d4f9286ef"},{"path":"audio.mjs","bytes":2303,"sha256":"21f8711fdcd4e818058c15e9d7b1a39cd712c79fb0d8b30f1004b59ba0942386"},{"path":"controller.mjs","bytes":6954,"sha256":"7bac08763d1f3a64e63630d51d73b7e76d2fd36b4233122f9299b6add320a6c7"},{"path":"experience.mjs","bytes":16487,"sha256":"b1854e90d8b6dda8afcbbc003692e6ffde75afbf238c2d1e38d3fc44ed2675dc"},{"path":"frozen-config.json","bytes":2813,"sha256":"4c05d393824cea6c07bfec7a9f16fc746c1e90332c552a94c07fa8bfec096e88"},{"path":"group1-shard1of2.bin","bytes":4194304,"sha256":"b42c3232bf13b0efc691d3f0693dd3fc74404f709b1deee0a271828af6dbbea2"},{"path":"group1-shard2of2.bin","bytes":455912,"sha256":"8253ab965aa3122c08f331777ca395ce9ca19bb9e7cb278b99de1c46dbdeb6dc"},{"path":"index.html","bytes":8394,"sha256":"2c6203846113792728ce48a9fdc404dc7814cb50416fe9003468c033cc27c59a"},{"path":"input-lifecycle.mjs","bytes":15308,"sha256":"da98c7a8b48dc1c12ca97b8d18340a566a9f56d1be6b2d2dbd30f32598444e69"},{"path":"licenses/babylonjs-core-LICENSE.txt","bytes":9226,"sha256":"9362ea9ea17cb221a20cbbd63f404710834cc273d2a9a7b60314fd68ab702cd6"},{"path":"licenses/babylonjs-core-NOTICE.txt","bytes":793,"sha256":"7f85d099ce3c6e1900a45ee8d5b8fa405e760c746af687b3ee2081416e48f183"},{"path":"licenses/babylonjs-loaders-LICENSE.txt","bytes":9226,"sha256":"9362ea9ea17cb221a20cbbd63f404710834cc273d2a9a7b60314fd68ab702cd6"},{"path":"licenses/core-js-LICENSE.txt","bytes":1064,"sha256":"66c014a988c01fdfd53ea344563c0aca795b321c66fe619a0cf40049fe0912de"},{"path":"licenses/draco-LICENSE.txt","bytes":11556,"sha256":"5ad8c213095c573921d7388edf93f6a9f54490b8ebf3b165ae8ef1947cf70846"},{"path":"licenses/long-LICENSE.txt","bytes":11560,"sha256":"3ddf9be5c28fe27dad143a5dc76eea25222ad1dd68934a047064e56ed2fa40c5"},{"path":"licenses/meshoptimizer-LICENSE.txt","bytes":1086,"sha256":"9d665b55ed2643c4fc86594749427b031c7b3367e11760a73c6dc69c415b2d3f"},{"path":"licenses/pose-detection-LICENSE.txt","bytes":11357,"sha256":"58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd"},{"path":"licenses/regenerator-runtime-LICENSE.txt","bytes":1080,"sha256":"51887a3d47051ac2fce1210562e5b9fe0830a8a8fabeb272c2d586eeb18a05fd"},{"path":"licenses/seedrandom-LICENSE.txt","bytes":1079,"sha256":"7500bc57d010cde21006d88014d7191f36be1750894bfc4a01ce3844f1f9af2e"},{"path":"licenses/tfjs-LICENSE.txt","bytes":11358,"sha256":"cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"},{"path":"licenses/tfjs-layers-LICENSE.txt","bytes":13216,"sha256":"a79c269bc0e74de72571cea54c5f92ed74cbc6e8d1250a9fdb40357383d9dc4b"},{"path":"licenses/three-LICENSE.txt","bytes":1081,"sha256":"8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc"},{"path":"licenses/tslib-CopyrightNotice.txt","bytes":822,"sha256":"da16ddb65f8ca390998fb99223d0112498b56b45784d00afd77ff8ce1ac4de8b"},{"path":"licenses/tslib-LICENSE.txt","bytes":655,"sha256":"210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751"},{"path":"model.json","bytes":168013,"sha256":"c65a3447162efa0c42af29498a4b151f4415b36ff3ae6fae2b28a32e840dcbfb"},{"path":"pose-detection.min.js","bytes":72653,"sha256":"eedb38254421de21571e88db202382104b98f36de221a94f956d7bd01f43abcd"},{"path":"scene.glb","bytes":693828,"sha256":"9a73e9b020a4e8e4672cc2a8dbbf30029bcde6cd0a468402a4fde729f26a1d53"},{"path":"style.css","bytes":15248,"sha256":"14ed9bf33efe0b7ffa8eb5a01a0329c9adf800028eb29022135ca56d2e3bece4"},{"path":"t1.bundle.js","bytes":626983,"sha256":"280db4f5ec5f66be2cac1cf36afc4f5ca81cd378a2a7c082db226d6a5819584c"},{"path":"t1.bundle.js.LEGAL.txt","bytes":188,"sha256":"cc7cc7e2f53d5db0235ab2226e85fc6e91655161573b39813b41bb00e5919674"},{"path":"t2.bundle.js","bytes":2854869,"sha256":"3ab4828ff867b1738f8885eeb5fef3d86bcea56b0b3045c3fb5e93bbd2039014"},{"path":"tf.min.js","bytes":1469833,"sha256":"3daeec03303a884a0c1b3314a1dffad572c402ec941ee3638e9b9d64e450964b"},{"path":"visual.mjs","bytes":1406,"sha256":"b0b5c3795df8abef4fc7fd50a49f3f010704e255ba01a9ab45c0f679bf0d60c3"},{"path":"w10/logic/city-guardian.mjs","bytes":6887,"sha256":"e835136d7a8145b87193aee297cb869ef15d8c97761b25acc502a16fd570a16b"},{"path":"w11/gate.mjs","bytes":4481,"sha256":"9531b81e67a9bc4091d54c7243ba7577b945298281d9b29f417147a7731a691b"}], fixture=[{"path":"N1.png","bytes":22466,"sha256":"919a0216650ef3748afba3580100f4d9c6573c74557bd6f6b796cc047a454698","rgbSha256":"ee3660fd04d0ba26d6f9181a26413c814162c55e011ca157ba66bf445ea86a01"},{"path":"N2.png","bytes":22466,"sha256":"12c26221a53a4ad1c2891d0ad42ea2f6c29a1ef7a8ed5670b49c363cd29ddbed","rgbSha256":"78048b720bb193b47f0f235e4d82942214ca5c298dc1971db432ae76b34b1f94"},{"path":"L1.png","bytes":23872,"sha256":"d9b8c0e69f98172c52ed0ecec35846ea4bc788508f67a0760f8de6a61cc71f70","rgbSha256":"114792694bc081e385c7c81200dbb5f91ed16092f62caa84b09ec3a0644ed94d"},{"path":"L2.png","bytes":23871,"sha256":"d2e886aad1c2cc614710d28c49932bffc71f6b9c758d699d3a17f9a29553ba7e","rgbSha256":"ada1925c8897d89ce4badabb04a383cfacc4bdb37c013811feac335145113b58"}];
+          const generated={"diagnostic.html":"<!doctype html>\n<html lang=\"en\">\n<meta charset=\"utf-8\">\n<meta name=\"referrer\" content=\"no-referrer\">\n<title>W37 isolated synthetic-pixel diagnostic — no camera</title>\n<canvas id=\"scene\" width=\"960\" height=\"540\"></canvas>\n<canvas id=\"input\" width=\"480\" height=\"270\"></canvas>\n<script src=\"/tf.min.js\"></script>\n<script src=\"/pose-detection.min.js\"></script>\n<script type=\"module\" src=\"/diagnostic.mjs\"></script>\n</html>\n","diagnostic.mjs":"// Isolated static synthetic pixels only; never invoke production camera lifecycle.\nimport {anonymousEnvelope} from '/input-lifecycle.mjs';\nimport {classifyPose,createPoseGate,TRACK_GAP_MS} from '/w11/gate.mjs';\nimport {createCityGuardian} from '/w10/logic/city-guardian.mjs';\nimport {createExperienceController} from '/controller.mjs';\nimport {createVisual} from '/visual.mjs';\n\nconst frames=[\n  ['N1','neutral','ee3660fd04d0ba26d6f9181a26413c814162c55e011ca157ba66bf445ea86a01'],\n  ['N2','neutral','78048b720bb193b47f0f235e4d82942214ca5c298dc1971db432ae76b34b1f94'],\n  ['L1','left_raise','114792694bc081e385c7c81200dbb5f91ed16092f62caa84b09ec3a0644ed94d'],\n  ['L2','left_raise','ada1925c8897d89ce4badabb04a383cfacc4bdb37c013811feac335145113b58'],\n];\nconst engine=location.hash.slice(1), scene=document.getElementById('scene'), canvas=document.getElementById('input');\nconst result={scope:'Static fictional image translations; no video/camera/device identity',engine,done:false,pass:false,phase:'initial',backend:null,estimateCalls:0,rows:[],preloaded:[],events:[],checks:{},cleanup:{}};\nObject.defineProperty(window,'__w37Result',{value:result,writable:false,configurable:false});\nfunction require(ok,id){if(!ok)throw Error(id);}\nfunction mark(id,ok){result.checks[id]=!!ok;require(ok,id);}\nfunction guard(){const s=window.__w37Guard;require(s?.installed&&s.mediaCalls===0&&s.mediaElements===0&&s.csp===0&&!document.querySelector('audio,video'),'guard-failed');return s;}\nfunction effects(source,rows){for(const e of rows)result.events.push({source,kind:e.kind,stars:e.stars??null});}\nfunction summary(s){return {phase:s.phase,tracking:s.tracking,armed:s.armed,pose:s.pose,completedGoals:s.completedGoals,roundStars:s.roundStars,totalStars:s.totalStars,nextGoal:s.nextGoal?.action??null,city:s.city,inputSource:s.inputSource,stopped:s.stopped};}\nconst hex=buf=>Array.from(new Uint8Array(buf),b=>b.toString(16).padStart(2,'0')).join('');\nasync function drawHash(ctx,img){\n  require(img.naturalWidth===480&&img.naturalHeight===270&&canvas.width===480&&canvas.height===270,'pixel-size');\n  ctx.drawImage(img,0,0); // intrinsic-size, no resize, flip or colour adjustment\n  const rgba=ctx.getImageData(0,0,480,270).data,rgb=new Uint8Array(388800);\n  require(rgba.length===518400,'pixel-data-length');\n  for(let i=0,j=0;i<rgba.length;i+=4,j+=3){require(rgba[i+3]===255,'nonopaque-pixel');rgb[j]=rgba[i];rgb[j+1]=rgba[i+1];rgb[j+2]=rgba[i+2];}\n  return hex(await crypto.subtle.digest('SHA-256',rgb));\n}\nasync function loadImage(id){return new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(Error('fixture-image-load'));img.src='/fixtures/'+id+'.png';});}\nlet visual,detector,controller,raf=null,frameError=null,frameCount=0,visualTime=0,lastFrameAt=null,state;\nfunction tickFrame(at){\n  raf=null;\n  try{\n    guard();const r=controller.tick(performance.now());require(r.accepted,'tick-rejected');state=r.state;effects('tick',r.effects);\n    if(lastFrameAt!==null&&state.phase!=='paused')visualTime+=Math.max(0,at-lastFrameAt);\n    lastFrameAt=at;visual.draw(visualTime,state);frameCount++;\n    raf=requestAnimationFrame(tickFrame);\n  }catch{frameError='actual-raf-error';}\n}\nasync function main(){\n  try{\n    guard();mark('fixed-engine',['T1','T2'].includes(engine));mark('track-gap-original',TRACK_GAP_MS===500);\n    mark('normal-loopback-diagnostic',location.protocol==='http:'&&location.hostname==='127.0.0.1');\n    const ctx=canvas.getContext('2d',{willReadFrequently:true});require(ctx&&crypto.subtle,'canvas-hash-unavailable');\n    result.phase='preload';const images=[];\n    for(const [id,,expected] of frames){const img=await loadImage(id),actual=await drawHash(ctx,img);result.preloaded.push({id,rgbSha256:actual});mark('preload-'+id,actual===expected);images.push(img);}\n    mark('unique-preloaded-pixels',new Set(result.preloaded.map(x=>x.rgbSha256)).size===4);\n    result.phase='model-load';const tf=window.tf,pd=window.poseDetection;require(tf&&pd,'missing-pinned-library');\n    mark('tf-webgl-selected',await tf.setBackend('webgl')===true);await tf.ready();result.backend=tf.getBackend();mark('actual-webgl',result.backend==='webgl');\n    const loadAt=performance.now();detector=await pd.createDetector(pd.SupportedModels.MoveNet,{modelType:pd.movenet.modelType.SINGLEPOSE_LIGHTNING,modelUrl:new URL('/model.json',location.origin).href,enableSmoothing:false});\n    result.modelLoadMs=performance.now()-loadAt;mark('model-backend-after-load',tf.getBackend()==='webgl');guard();\n    result.phase='visual-load';controller=createExperienceController({createCityGuardian,createPoseGate,trackGapMs:TRACK_GAP_MS,source:'model',seed:20261122});state=controller.snapshot();\n    visual=await createVisual(scene,{engine,hero:'dawn',friend:'cloud',city:'dawn'});visual.draw(0,state);\n    let g=guard();result.glBefore={...g.sceneGL};mark('actual-scene-webgl',g.sceneGL.contexts>0&&g.sceneGL.wrapped&&g.sceneGL.draws>0&&!g.sceneGL.lost);\n    result.phase='start';const start=controller.command('start',performance.now());mark('original-start',start.accepted);state=start.state;effects('start',start.effects);raf=requestAnimationFrame(tickFrame);\n    let previous=null;\n    for(let i=0;i<frames.length;i++){\n      const [id,label,expected]=frames[i];result.phase='estimate-'+id;guard();require(!frameError,'raf-failure');\n      const pixelHash=await drawHash(ctx,images[i]);mark('actual-pixels-'+id,pixelHash===expected);guard();require(!frameError,'raf-failure');\n      const beganAt=performance.now(),begun=controller.beginInference(beganAt);require(begun?.token,'token-start-rejected');state=begun.state;effects('begin-'+id,begun.effects);\n      require(result.estimateCalls<4,'estimate-budget');result.estimateCalls++;\n      const poses=await detector.estimatePoses(canvas,{flipHorizontal:false});\n      const observedAt=performance.now();require(Array.isArray(poses),'invalid-model-return');\n      const counts=poses.map(p=>Array.isArray(p?.keypoints)?p.keypoints.length:0);\n      const finite=poses.every(p=>Number.isFinite(p?.score)&&Array.isArray(p.keypoints)&&p.keypoints.every(k=>[k?.x,k?.y,k?.score].every(Number.isFinite)&&typeof k.name==='string'));\n      const envelope=anonymousEnvelope(poses,observedAt,480,270),classification=classifyPose(envelope);\n      const accepted=controller.submitEnvelope(begun.token,envelope,observedAt);state=accepted.state;effects('submit-'+id,accepted.effects);\n      const before=guard().sceneGL.draws;visual.draw(visualTime,state);const after=guard().sceneGL.draws;\n      const row={id,prelabel:label,pixelHash,poseCount:poses.length,keypointCounts:counts,allFinite:finite,envelope,classification,beganAt,observedAt,elapsedMs:observedAt-beganAt,gapMs:previous===null?null:observedAt-previous,accepted:accepted.accepted,reason:accepted.reason??null,effects:accepted.effects.map(e=>({kind:e.kind,stars:e.stars??null})),state:summary(state),drawsBefore:before,drawsAfter:after,backend:tf.getBackend()};\n      result.rows.push(row);previous=observedAt;\n      require(!frameError,'raf-failure');require(tf.getBackend()==='webgl','backend-changed');\n    }\n    result.phase='check';const rows=result.rows,last=rows[3];\n    mark('four-real-estimates',result.estimateCalls===4&&rows.length===4);\n    mark('labels-finite-anonymous',rows.every(r=>r.poseCount===1&&r.keypointCounts.length===1&&r.keypointCounts[0]===17&&r.allFinite&&r.envelope.keypoints.length===4&&r.envelope.tracked&&r.classification.valid&&r.classification.gesture===r.prelabel));\n    mark('tokens-real-time-tracked',rows.every((r,i)=>r.accepted&&r.state.tracking&&r.backend==='webgl'&&r.elapsedMs>=0&&r.elapsedMs<500&&(i===0?r.gapMs===null:r.gapMs>0&&r.gapMs<500)));\n    mark('neutral-rearm',rows[0].state.armed===false&&rows[1].state.armed===true&&rows[2].state.armed===true&&last.state.armed===false);\n    mark('no-early-credit',rows.slice(0,3).every(r=>r.state.completedGoals===0&&r.state.roundStars===0&&r.state.totalStars===0&&r.effects.every(e=>e.kind!=='light-ready')));\n    mark('one-original-light-effect',last.effects.filter(e=>e.kind==='light-ready'&&e.stars===1).length===1&&result.events.filter(e=>e.kind==='light-ready').length===1&&result.events.every(e=>!['shield-ready','friend-ready','round-success'].includes(e.kind)));\n    mark('final-city-state',last.state.completedGoals===1&&last.state.roundStars===1&&last.state.totalStars===0&&last.state.city.luminous===true&&last.state.city.shielded===false&&last.state.city.restored===false&&last.state.nextGoal==='shield');\n    g=guard();result.glAfter={...g.sceneGL};result.rafFrames=frameCount;\n    mark('real-scene-draws',frameCount>0&&!frameError&&rows.every(r=>r.drawsAfter>r.drawsBefore)&&g.sceneGL.draws>result.glBefore.draws&&!g.sceneGL.lost);\n    result.pass=true;\n  }catch{result.failurePhase=result.phase;result.pass=false;}\n  finally{\n    if(raf!==null){cancelAnimationFrame(raf);raf=null;}result.cleanup.rafCancelled=raf===null;\n    if(controller){try{result.cleanup.controllerStopped=controller.stop(performance.now()).state.stopped===true;}catch{result.cleanup.controllerStopped=false;}}\n    if(detector){try{await detector.dispose();result.cleanup.detectorDisposed=true;}catch{result.cleanup.detectorDisposed=false;}}\n    if(visual){try{await visual.dispose();result.cleanup.visualDisposed=true;}catch{result.cleanup.visualDisposed=false;}}\n    try{result.finalGuard={...guard(),sceneGL:{...guard().sceneGL}};}catch{result.pass=false;}\n    if(!result.cleanup.rafCancelled||!result.cleanup.controllerStopped||!result.cleanup.detectorDisposed||!result.cleanup.visualDisposed||frameError)result.pass=false;\n    result.done=true;\n  }\n}\nvoid main();\n"};
+          const generatedIdentity={"diagnostic.html":[422,"604ed9d2fb9f81a72a7ddc855d101de3e598a9fffa3bacf9e6ac33d6158bcc17"],"diagnostic.mjs":[9677,"ed42ac12a899703c018836523de4f40fa2e1e6868a43f5e3445595f12ef67e9e"]};
           const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
-          const docs=new Map(), found=[];
-          function walk(dir,prefix=''){
-            for(const e of fs.readdirSync(dir,{withFileTypes:true})){
-              const f=prefix+e.name,p=path.join(dir,e.name);
-              assert(!e.isSymbolicLink(),'symlink forbidden');
-              if(e.isDirectory())walk(p,f+'/');else{assert(e.isFile());found.push(f);}
+          const docs=new Map(), manifest=new Map();
+          const workspace=process.env.GITHUB_WORKSPACE;
+          assert(workspace&&process.platform==='darwin'&&process.arch==='arm64');
+          assert.equal(candidate.length,49);assert.equal(candidate.reduce((s,f)=>s+f.bytes,0),16508363);
+          assert.equal(hash(Buffer.from(JSON.stringify(candidate))),'d9ee717a3a9523bb227c725c3c2d52861725a0e58200b8cecc51b8aff8deef6c');
+          assert.equal(fixture.length,4);assert.equal(new Set(fixture.map(f=>f.rgbSha256)).size,4);
+          assert.deepEqual(fixture.map(f=>f.path),['N1.png','N2.png','L1.png','L2.png']);
+          function verifyDirectory(dir,rows,prefix=''){
+            const found=[];
+            function walk(p,stem=''){
+              for(const e of fs.readdirSync(p,{withFileTypes:true})){
+                const f=stem+e.name,full=path.join(p,e.name);assert(!e.isSymbolicLink(),'symlink forbidden');
+                if(e.isDirectory())walk(full,f+'/');else{assert(e.isFile());found.push(f);}
+              }
             }
+            assert(fs.lstatSync(dir).isDirectory()&&!fs.lstatSync(dir).isSymbolicLink());walk(dir);
+            assert.deepEqual(found.sort(),rows.map(x=>x.path).sort());
+            for(const f of rows){const b=fs.readFileSync(path.join(dir,f.path));assert.equal(b.length,f.bytes);assert.equal(hash(b),f.sha256);const k=prefix+f.path;assert(!docs.has(k));docs.set(k,b);manifest.set(k,[f.bytes,f.sha256]);}
           }
-          walk(root);
-          assert.deepEqual(found.sort(),Object.keys(manifest).sort());
-          for(const [p,[size,h]] of Object.entries(manifest)){
-            const b=fs.readFileSync(path.join(root,p));assert.equal(b.length,size);assert.equal(hash(b),h);docs.set(p,b);
+          verifyDirectory(path.join(workspace,'ci-test','w26-synthetic-w37'),candidate);
+          verifyDirectory(path.join(workspace,'ci-test','w37-fixture'),fixture,'fixtures/');
+          for(const f of fixture){const b=docs.get('fixtures/'+f.path);assert.equal(b.subarray(0,8).toString('hex'),'89504e470d0a1a0a');assert.equal(b.subarray(12,16).toString(),'IHDR');assert.equal(b.readUInt32BE(16),480);assert.equal(b.readUInt32BE(20),270);assert.equal(b[24],8);assert.equal(b[25],2);assert.equal(b[28],0);}
+          for(const [k,source] of Object.entries(generated)){
+            const b=Buffer.from(source,'utf8'),[n,h]=generatedIdentity[k];assert.equal(b.length,n);assert.equal(hash(b),h);assert(!docs.has(k));docs.set(k,b);manifest.set(k,[n,h]);
           }
-          assert.equal(Object.values(manifest).reduce((s,[n])=>s+n,0),16486032);
-          const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.glb':'model/gltf-binary','.wav':'audio/wav'};
+          const shared=['diagnostic.html','diagnostic.mjs','tf.min.js','pose-detection.min.js','model.json','group1-shard1of2.bin','group1-shard2of2.bin','input-lifecycle.mjs','controller.mjs','w11/gate.mjs','w10/logic/city-guardian.mjs','visual.mjs','frozen-config.json','art/art-manifest.json','art/scenes/dawn-cloud-dawn.glb',...fixture.map(f=>'fixtures/'+f.path)];
+          const mime={'.html':'text/html; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.glb':'model/gltf-binary','.bin':'application/octet-stream','.png':'image/png'};
+          const csp="default-src 'none'; script-src 'self'; connect-src 'self'; img-src 'self'; style-src 'self'; media-src 'none'; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'; frame-ancestors 'none'";
           let active=null,origin,halt=false;
-          const violation=()=>{halt=true;if(active)active.violations++};
+          function violation(){halt=true;if(active)active.violations++;}
           const server=http.createServer((req,res)=>{
             const f=req.url?.startsWith('/')?req.url.slice(1):'';
-            if(!active||req.method!=='GET'||!runtime.has(f)||!docs.has(f)||req.headers.host!==new URL(origin).host){
-              violation();res.writeHead(403,{'Connection':'close'});res.end();return;
-            }
+            if(!active||req.method!=='GET'||!active.allow.has(f)||!docs.has(f)||req.headers.host!==new URL(origin).host){violation();res.writeHead(403,{'Connection':'close'});res.end();return;}
             const b=docs.get(f);active.server[f]=(active.server[f]||0)+1;
-            res.writeHead(200,{'Content-Type':types[path.extname(f)],'Content-Length':b.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
-            res.end(b);
+            res.writeHead(200,{'Content-Type':mime[path.extname(f)],'Content-Length':b.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':csp,'Referrer-Policy':'no-referrer','Permissions-Policy':'camera=(), microphone=(), display-capture=()'});res.end(b);
           });
-          const result={scope:'W23 local loopback anonymous touch practice only',cases:[]};
-          function classify(u){
-            if(!u.startsWith(origin+'/'))return null;
-            const q=u.slice(origin.length+1);return runtime.has(q)?q:null;
-          }
+          const result={scope:'W37 real WebKit model+original rule+scene; static translated fixture only',cases:[],candidateTree:'d9ee717a3a9523bb227c725c3c2d52861725a0e58200b8cecc51b8aff8deef6c',candidateManifest:'81d7460bc04f6333bc2930542c480ca349afeb18b111729536adc21506aa3da9',candidateFiles:49,fixtureFiles:4,generatedIdentity};
+          function classify(url,allow){try{const u=new URL(url);if(u.origin!==origin||u.search||u.hash)return null;const p=u.pathname.slice(1);return allow.has(p)?p:null;}catch{return null;}}
           async function trial(browser,engine){
-            const out={engine,pass:false,violations:0,requestFailures:0,pageErrors:0,consoleErrors:0,server:{},requested:{},verified:{},checks:{},notRequested:[]};active=out;
-            const pending=[],reqs=new Map();
-            let context,page,deadline=Date.now()+120000;
-            const remain=(cap=10000)=>{if(halt)throw Error('safety/identity stop');const n=deadline-Date.now();if(n<=0)throw Error('case deadline');return Math.min(n,cap)};
-            const mark=(id,ok)=>{out.checks[id]=!!ok;assert(ok,id)};
-            const register=req=>{
-              if(reqs.has(req))return reqs.get(req);
-              const f=classify(req.url()),ok=!!f&&req.method()==='GET'&&!req.redirectedFrom();
-              const x={f,ok,done:false};reqs.set(req,x);
-              if(!ok)violation();else out.requested[f]=(out.requested[f]||0)+1;
-              return x;
-            };
-            async function state(){
-              return page.evaluate(()=>{
-                const $=id=>document.getElementById(id),s=window.__w24Observe,c=$('scene'),rect=e=>e.getBoundingClientRect().toJSON();
-                return {progress:Number($('progress-count').textContent),round:Number($('round').textContent),stars:Number($('total-stars').textContent),
-                  time:$('timebar').value,title:$('goal-title').textContent,source:document.querySelector('.mode-pill').textContent,
-                  active:document.querySelector('[data-goal].active')?.dataset.goal,roundStars:document.querySelectorAll('#stars .earned').length,
-                  status:$('visual-status').textContent,visualError:$('visual-status').classList.contains('is-error'),
-                  mediaGuard:s.guard,cameraCalls:s.cameraCalls,gl:s.gl,csp:s.csp,media:document.querySelectorAll('video').length,
-                  streams:[...document.querySelectorAll('audio,video')].filter(e=>e.srcObject).length,
-                  canvas:{w:c.width,h:c.height,box:rect(c)},stage:rect($('stage')),guide:rect($('goal-hint')),
-                  rotate:getComputedStyle(document.querySelector('.rotate-hint')).display,
-                  viewport:{w:innerWidth,h:innerHeight},scroll:scrollY,muted:$('mute').getAttribute('aria-pressed')};
-              });
+            const allow=new Set([...shared,engine==='T1'?'t1.bundle.js':'t2.bundle.js']);for(const f of allow)assert(docs.has(f));
+            const out={engine,pass:false,violations:0,requestFailures:0,pageErrors:0,consoleErrors:0,server:{},requested:{},verified:{},closed:false,diagnostic:null};
+            active=out;active.allow=allow;
+            const pending=[],seen=new Map(),deadline=Date.now()+120000;
+            let context,page;
+            const watchdog=setTimeout(()=>{out.timedOut=true;halt=true;if(context)void context.close().catch(()=>{out.closeFailure=true;});},120000);
+            const remain=(cap=120000)=>{if(halt)throw Error('safety-stop');const t=deadline-Date.now();if(t<=0)throw Error('case-timeout');return Math.min(t,cap);};
+            function register(req){
+              if(seen.has(req))return seen.get(req);
+              const f=classify(req.url(),allow),ok=!!f&&req.method()==='GET'&&!req.redirectedFrom();
+              const row={f,ok,done:false};seen.set(req,row);
+              if(!ok)violation();else out.requested[f]=(out.requested[f]||0)+1;return row;
             }
-            async function guard(){
-              const s=await state();if(!s.mediaGuard||s.cameraCalls||s.media||s.streams||s.csp){violation();throw Error('media/CSP stop');}
-              if(halt)throw Error('network/identity stop');return s;
-            }
-            async function click(sel){await guard();await page.locator(sel).click({timeout:remain()});return guard();}
-            async function wait(fn,args,cap=10000){await page.waitForFunction(fn,args,{timeout:remain(cap)});return guard();}
-            async function step(name,pred){const s=await guard();mark(name,pred(s));return s;}
             try{
               context=await browser.newContext({viewport:{width:960,height:540},serviceWorkers:'block',permissions:[]});
               await context.addInitScript(()=>{
-                const s={guard:false,cameraCalls:0,csp:0,gl:{contexts:0,draws:0,observed:false}};
-                Object.defineProperty(window,'__w24Observe',{value:s});
-                addEventListener('securitypolicyviolation',()=>s.csp++);
+                const o={installed:false,mediaCalls:0,mediaElements:0,csp:0,sceneGL:{contexts:0,wrapped:false,draws:0,lost:0},otherGL:{contexts:0}};
+                Object.defineProperty(window,'__w37Guard',{value:o,writable:false,configurable:false});
+                addEventListener('securitypolicyviolation',()=>o.csp++);
                 try{
                   const md=navigator.mediaDevices;if(!md||typeof md.getUserMedia!=='function')return;
-                  const deny=()=>{s.cameraCalls++;return Promise.reject(new DOMException('Media disabled for anonymous CI','NotAllowedError'));};
-                  Object.defineProperty(md,'getUserMedia',{value:deny,configurable:false,writable:false});
-                  if(typeof md.getDisplayMedia==='function')Object.defineProperty(md,'getDisplayMedia',{value:deny,configurable:false,writable:false});
-                  for(const k of ['getUserMedia','webkitGetUserMedia','mozGetUserMedia'])if(typeof navigator[k]==='function')Object.defineProperty(navigator,k,{value:deny,configurable:false,writable:false});
-                  s.guard=md.getUserMedia===deny;
-                  const original=HTMLCanvasElement.prototype.getContext,seen=new WeakSet();
+                  const deny=()=>{o.mediaCalls++;return Promise.reject(new DOMException('Media disabled','NotAllowedError'));};
+                  const denySync=()=>{o.mediaCalls++;throw new DOMException('Media disabled','NotAllowedError');};
+                  const pin=(obj,k,v)=>{Object.defineProperty(obj,k,{value:v,configurable:false,writable:false});if(obj[k]!==v)throw Error('guard');};
+                  pin(md,'getUserMedia',deny);if(typeof md.getDisplayMedia==='function')pin(md,'getDisplayMedia',deny);
+                  for(const k of ['getUserMedia','webkitGetUserMedia','mozGetUserMedia'])if(typeof navigator[k]==='function')pin(navigator,k,deny);
+                  for(const k of ['Audio','AudioContext','webkitAudioContext','MediaRecorder'])if(typeof window[k]==='function')pin(window,k,denySync);
+                  for(const p of [HTMLCanvasElement.prototype,HTMLMediaElement.prototype])if(typeof p.captureStream==='function')pin(p,'captureStream',denySync);
+                  const src=Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype,'srcObject');
+                  if(src?.set&&src.configurable)Object.defineProperty(HTMLMediaElement.prototype,'srcObject',{get:src.get,set(v){if(v!==null)denySync();return src.set.call(this,v);},configurable:false});
+                  const create=Document.prototype.createElement,createNS=Document.prototype.createElementNS;
+                  Document.prototype.createElement=function(name,...a){if(['audio','video'].includes(String(name).toLowerCase())){o.mediaElements++;return denySync();}return create.call(this,name,...a);};
+                  Document.prototype.createElementNS=function(ns,name,...a){if(['audio','video'].includes(String(name).toLowerCase())){o.mediaElements++;return denySync();}return createNS.call(this,ns,name,...a);};
+                  new MutationObserver(m=>{for(const row of m)for(const n of row.addedNodes)if(n.nodeType===1&&(n.matches?.('audio,video')||n.querySelector?.('audio,video')))o.mediaElements++;}).observe(document,{childList:true,subtree:true});
+                  const original=HTMLCanvasElement.prototype.getContext,seenGL=new WeakSet();
                   HTMLCanvasElement.prototype.getContext=function(type,...args){
                     const gl=original.call(this,type,...args);
-                    if(gl&&['webgl','webgl2','experimental-webgl'].includes(type)&&this.id==='scene'&&!seen.has(gl)){
-                      seen.add(gl);s.gl.contexts++;
-                      for(const n of ['drawArrays','drawElements','drawArraysInstanced','drawElementsInstanced']){
-                        if(typeof gl[n]!=='function')continue;const method=gl[n];
-                        gl[n]=function(...a){const r=method.apply(this,a);s.gl.draws++;return r;};
-                        if(gl[n]!==method)s.gl.observed=true;
-                      }
-                    }
-                    return gl;
+                    if(gl&&['webgl','webgl2','experimental-webgl'].includes(type)&&!seenGL.has(gl)){
+                      seenGL.add(gl);
+                      if(this.id==='scene'){
+                        o.sceneGL.contexts++;this.addEventListener('webglcontextlost',()=>o.sceneGL.lost++);
+                        for(const n of ['drawArrays','drawElements','drawArraysInstanced','drawElementsInstanced'])if(typeof gl[n]==='function'){
+                          const method=gl[n];gl[n]=function(...a){const r=method.apply(this,a);o.sceneGL.draws++;return r;};if(gl[n]!==method)o.sceneGL.wrapped=true;
+                        }
+                      }else o.otherGL.contexts++;
+                    }return gl;
                   };
+                  o.installed=true;
                 }catch{}
               });
               context.on('request',register);
-              context.on('requestfailed',r=>{register(r);out.requestFailures++;});
-              context.on('response',r=>{
-                const x=register(r.request());
-                if(!x.ok)return;
-                pending.push((async()=>{try{
-                  const b=await r.body(),[size,h]=manifest[x.f];
-                  if(x.done||r.status()!==200||b.length!==size||hash(b)!==h){violation();return;}
-                  x.done=true;out.verified[x.f]=(out.verified[x.f]||0)+1;
-                }catch{violation();}})());
+              context.on('requestfailed',req=>{register(req);out.requestFailures++;});
+              context.on('response',response=>{
+                const x=register(response.request());if(!x.ok)return;
+                pending.push((async()=>{try{const b=await response.body(),[n,h]=manifest.get(x.f);if(x.done||response.status()!==200||b.length!==n||hash(b)!==h){violation();return;}x.done=true;out.verified[x.f]=(out.verified[x.f]||0)+1;}catch{violation();}})());
               });
-              await context.route('**/*',async route=>{
-                const x=register(route.request());
-                if(!x.ok||halt){await route.abort();return;}await route.continue();
-              });
-              page=await context.newPage();
-              page.on('pageerror',()=>out.pageErrors++);
-              page.on('console',m=>{if(m.type()==='error')out.consoleErrors++;});
-              page.on('dialog',d=>{violation();d.dismiss().catch(()=>{});});
-              await page.goto(origin+'/index.html',{waitUntil:'load',timeout:remain(20000)});
-              async function drawReady(previous=0){
-                return wait(prev=>window.__w24Observe.gl.draws>prev&&document.querySelector('#visual-status').hidden,previous,15000);
-              }
-              await drawReady();
-              let s=await guard();mark('real-app-webgl-draw',s.gl.contexts>0&&s.gl.observed&&s.gl.draws>0&&!s.visualError&&s.canvas.w===960&&s.canvas.h===540);
-              mark('practice-label',s.source.includes('无相机'));
-              if(engine==='T2'){
-                const before=s.gl.draws;await page.locator('#engine').selectOption('T2',{timeout:remain()});
-                await wait(()=>document.querySelector('#visual-status').hidden&&document.querySelector('#engine').value==='T2',null,15000);
-                await drawReady(before);s=await guard();mark('selected-t2-context',s.gl.contexts>=2);
-              }else mark('selected-t1-context',await page.locator('#engine').inputValue()==='T1');
-              // All input is genuine UI clicks; no debug controller, clock, model or canvas replacement.
-              await click('#start');await step('round-start',s=>s.round===1&&s.progress===0&&s.active==='light');
-              await click('[data-action=light]');await step('unarmed-no-credit',s=>s.progress===0);
-              await click('[data-action=neutral]');await click('[data-action=light]');
-              await step('light-credit',s=>s.progress===1&&s.roundStars===1&&s.active==='shield');
-              await click('#pause');const paused=await guard();
-              await page.waitForTimeout(Math.min(900,remain()));const still=await guard();
-              mark('manual-pause-clock',still.title==='先休息一下'&&Math.abs(still.time-paused.time)<=1&&await page.locator('#resume').isVisible());
-              await click('#resume');
-              await click('[data-action=shield]');await step('resume-rearm-required',s=>s.progress===1);
-              await click('[data-action=neutral]');await click('[data-action=shield]');await step('shield-credit',s=>s.progress===2&&s.roundStars===2);
-              await click('[data-action=neutral]');await click('[data-action=restore]');
-              await step('successful-round',s=>s.progress===3&&s.roundStars===3&&s.stars===3&&s.title==='守护完成！');
-              await click('#next');await step('next-round',s=>s.round===2&&s.progress===0&&s.stars===3);
-              await click('[data-action=neutral]');await click('[data-action=light]');
-              // Observe the unchanged real countdown (not accelerated or injected).
-              await wait(()=>!document.getElementById('retry').hidden,null,remainingForBreak());
-              await step('real-time-break',s=>s.time===0&&s.progress===1&&s.title==='今天也很棒！');
-              await click('#retry');await step('retry-keeps-progress',s=>s.round===2&&s.progress===1&&s.time>0);
-              await click('[data-action=neutral]');await click('[data-action=shield]');
-              await click('[data-action=neutral]');await click('[data-action=restore]');
-              await step('retry-success',s=>s.progress===3&&s.stars===6);
-              await click('#restart');await step('restart-clears-total',s=>s.round===1&&s.stars===0&&s.progress===0);
-              await click('#mute');await step('mute-reachable',s=>s.muted==='true');
-              mark('volume-reachable',await page.locator('#volume').isEnabled());
-              // Real viewport observations, not iPhone safe-area simulation.
-              await page.setViewportSize({width:844,height:390});
-              await page.waitForTimeout(Math.min(250,remain()));
-              await page.evaluate(()=>window.scrollTo(0,0)); // ordinary layout observation only, not game injection
-              const inside=(b,v)=>b&&b.width>0&&b.height>0&&b.left>=-1&&b.right<=v.w+1&&b.top>=-1&&b.bottom<=v.h+1;
-              const controlRects=()=>page.evaluate(()=>Object.fromEntries(['pause','resume','stop','volume','mute','goal-hint'].map(id=>{
-                const el=document.getElementById(id);return [id,{rect:el.getBoundingClientRect().toJSON(),hidden:el.hidden,disabled:!!el.disabled}];
-              })));
-              const l=await guard();out.shortLayout={canvas:l.canvas.box,stage:l.stage,guide:l.guide,viewport:l.viewport,controls:await controlRects()};
-              mark('short-stage-visible',l.canvas.box.width>0&&l.canvas.box.top>=-1&&l.canvas.box.bottom<=l.viewport.h+1&&Math.abs(l.canvas.box.width/l.canvas.box.height-16/9)<0.03);
-              mark('short-guide-not-overlaid',l.guide.top>=l.canvas.box.bottom-2);
-              mark('short-guide-width',l.guide.width>0&&l.guide.left>=-1&&l.guide.right<=l.viewport.w+1);
-              await page.locator('#goal-hint').scrollIntoViewIfNeeded({timeout:remain()});
-              const guide=await guard();out.shortLayout.guideAfterScroll=guide.guide;
-              mark('short-guide-reachable',inside(guide.guide,guide.viewport));
-              await page.evaluate(()=>window.scrollTo(0,0));
-              await click('#pause');const pausedShort=await guard();out.shortLayout.paused=await controlRects();
-              mark('short-resume-reachable',await page.locator('#resume').isVisible()&&pausedShort.title==='先休息一下');
-              await page.locator('#resume').scrollIntoViewIfNeeded({timeout:remain()});
-              out.shortLayout.resumeAfterScroll=(await controlRects()).resume;
-              mark('short-resume-in-viewport',inside(out.shortLayout.resumeAfterScroll.rect,(await guard()).viewport));
-              await click('#resume');
-              // Observe a bounded actual keyboard traversal without imposing unreviewed focus-order thresholds.
-              out.shortLayout.tabOrder=[];
-              for(let i=0;i<7;i++){
-                await page.keyboard.press('Tab');
-                out.shortLayout.tabOrder.push(await page.evaluate(()=>{
-                  const el=document.activeElement;return {id:el.id||el.dataset.action||el.tagName,rect:el.getBoundingClientRect().toJSON(),scroll:scrollY};
-                }));
-              }
-              out.shortLayout.focusScope='seven ordinary Tabs from resumed control; full accessibility and real iPhone safe-area UNVERIFIED';
-              await page.setViewportSize({width:390,height:844});
-              await page.waitForTimeout(Math.min(250,remain()));
-              await page.evaluate(()=>window.scrollTo(0,0));
-              const p=await guard();out.portraitLayout={canvas:p.canvas.box,stage:p.stage,guide:p.guide,viewport:p.viewport,controls:await controlRects(),scope:'ordinary WebKit viewport, not iPhone hardware'};
-              mark('portrait-rotate-hint',p.rotate!=='none'&&p.canvas.box.left>=-1&&p.canvas.box.right<=p.viewport.w+1);
-              await click('#stop');await step('stop-exit',s=>s.title==='练习结束啦');
-              mark('restart-available',await page.locator('#start').isVisible());
-              await Promise.all(pending);await guard();
-              function remainingForBreak(){return remain(35000);}
-              out.gl=(await state()).gl;
-            }catch(e){out.failure=typeof e?.message==='string'&&Object.keys(out.checks).length?Object.keys(out.checks).at(-1)||'case':'initialization';}
-            finally{
-              if(page)await page.close().catch(()=>{});
-              if(context)await context.close().catch(()=>{});
+              await context.route('**/*',async route=>{const x=register(route.request());if(!x.ok||halt){await route.abort();return;}await route.continue();});
+              assert.equal(typeof context.routeWebSocket,'function');await context.routeWebSocket('**/*',ws=>{violation();ws.close({code:1008,reason:'disabled'});});
+              page=await context.newPage();page.on('pageerror',()=>out.pageErrors++);page.on('console',m=>{if(m.type()==='error')out.consoleErrors++;});page.on('worker',()=>violation());page.on('dialog',d=>{violation();d.dismiss().catch(()=>{});});
+              await page.goto(origin+'/diagnostic.html#'+engine,{waitUntil:'load',timeout:remain(30000)});
+              await page.waitForFunction(()=>window.__w37Result?.done===true,null,{timeout:remain()});
+              out.diagnostic=await page.evaluate(()=>window.__w37Result);
+              const liveGuard=await page.evaluate(()=>window.__w37Guard);
+              if(!liveGuard?.installed||liveGuard.mediaCalls||liveGuard.mediaElements||liveGuard.csp){violation();}
+              await Promise.all(pending);remain();
+            }catch{
+              out.failure=true;
+              // Preserve a bounded partial anonymous report when a running case errs/times out.
+              if(page&&!out.diagnostic){try{out.diagnostic=await page.evaluate(()=>window.__w37Result??null);}catch{}}
+            }finally{
+              if(page)try{await page.close();}catch{out.closeFailure=true;}
+              if(context)try{await context.close();out.closed=true;}catch{out.closeFailure=true;}
               await Promise.allSettled(pending);
-              for(const x of reqs.values())if(!x.ok||!x.done)violation();
+              clearTimeout(watchdog);
+              for(const x of seen.values())if(!x.ok||!x.done)violation();
               for(const f of Object.keys(out.requested))if(out.requested[f]!==out.verified[f]||out.requested[f]!==out.server[f])violation();
-              out.notRequested=Object.keys(manifest).filter(f=>!out.requested[f]).sort();
-              out.pass=!out.failure&&!out.violations&&!out.requestFailures&&!out.pageErrors&&!out.consoleErrors&&Object.values(out.checks).every(Boolean)&&out.checks['restart-available']===true;
-              console.log('W24_CASE '+JSON.stringify(out));active=null;
+              for(const f of Object.keys(out.server))if(out.requested[f]!==out.server[f])violation();
+              out.notRequested=[...allow].filter(f=>!out.requested[f]);
+              delete out.allow;
+              const d=out.diagnostic;
+              out.pass=!out.failure&&!out.timedOut&&!out.closeFailure&&out.closed&&!out.violations&&!out.requestFailures&&!out.pageErrors&&!out.consoleErrors&&out.notRequested.length===0&&d?.engine===engine&&d?.pass===true&&d?.estimateCalls===4;
+              console.log('W37_CASE '+JSON.stringify(out));active=null;
             }
             return out;
           }
           (async()=>{
             let browser;
             try{
-              await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve);});
-              origin='http://127.0.0.1:'+server.address().port;
+              await new Promise((ok,fail)=>{server.once('error',fail);server.listen(0,'127.0.0.1',ok);});origin='http://127.0.0.1:'+server.address().port;
               browser=await webkit.launch({headless:true,timeout:30000});result.webkit=browser.version();result.arch=process.arch;
-              for(const engine of ['T1','T2']){if(halt)break;const r=await trial(browser,engine);result.cases.push({engine,pass:r.pass,violations:r.violations});}
+              for(const engine of ['T1','T2']){if(halt)break;const r=await trial(browser,engine);result.cases.push({engine,pass:r.pass,estimates:r.diagnostic?.estimateCalls??0,violations:r.violations});}
             }catch{result.infrastructureError=true;}
-            finally{if(browser)await browser.close().catch(()=>{});await new Promise(resolve=>server.close(resolve));result.halted=halt;console.log('W24_SUMMARY '+JSON.stringify(result));if(halt||result.infrastructureError||result.cases.length!==2||result.cases.some(x=>!x.pass))process.exitCode=1;}
-          })().catch(()=>{process.exitCode=1});
+            finally{
+              if(browser)try{await browser.close();result.browserClosed=true;}catch{result.infrastructureError=true;}
+              try{await new Promise((ok,fail)=>server.close(e=>e?fail(e):ok()));result.serverClosed=true;}catch{result.infrastructureError=true;}
+              result.halted=halt;result.totalEstimates=result.cases.reduce((s,r)=>s+r.estimates,0);
+              console.log('W37_SUMMARY '+JSON.stringify(result));
+              if(halt||result.infrastructureError||!result.browserClosed||!result.serverClosed||result.cases.length!==2||result.totalEstimates!==8||result.cases.some(x=>!x.pass))process.exitCode=1;
+            }
+          })().catch(()=>{process.exitCode=1;});
           TEST
