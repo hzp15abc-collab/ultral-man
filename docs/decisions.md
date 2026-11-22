@@ -40,3 +40,11 @@
 - 仅提议 D5 放行构建与本地静态审查；在另一次独立实际构建/隐私/许可/目录/回滚审查通过前不得发布或提交实验。最小静态发行物及同源资产白名单/hash/许可/作者署名/NOTICE 必须核实，不公开研究文档、测试夹具、私人数据及开发工具。
 - 已核公开 main 仓库及 admin push 权限；HTTPS 根 GET 404，工具无 Pages settings 能力。拟独立 gh-pages 发行分支/单独 g1b 路径，具体 Pages 配置待核，不改 main 其他内容；必要时由用户最小开启/配置，不绕过。没有可用已验证 HTTPS 实验链接，不声称上线。
 - W5 经独立 d_supervisor 实际全文只读六份文档 D5 PASS，仅放行 T1/T2 构建及本地静态检查；部署需第二独立审查与确切配置/权限，真实 iPhone、G1b/G1c、生产、正式发布仍 UNVERIFIED。
+
+## ADR-006 · W5 实际静态构建与 W6 REVIEWED · 2026-11-22
+
+- 经 d_supervisor 独立实际只读最终 pack、完整 app/index/NOTICE、metafiles/verifier 源及证据，逐文件复算 SHA256/Git blob SHA1 与树哈希、静态隐私/权限生命周期/白名单/许可署名均无阻塞；PASS 限精确静态构建，非实际浏览器、网络、相机或真机。证据：`experiments/g1b/release/PACKAGE-EVIDENCE.md`、`release-manifest.json`、`dist/g1b/`，29 个普通文件、10,663,193 bytes、buildId `w5-g1b-9e3f86e3598c25a3`、树 SHA256 `9e3f86e3598c25a3eb9cbab0cf0d922d31547e3588c8e5daedd4f3c3ff536c36`。
+- W6 PENDING D6，拟仅同仓库 gh-pages 新分支暂存精确 29 文件的 g1b 路径。此前观察 main HEAD 为 `afec3db49dfc8891b3e35fa1f961be10cb148217`，查询 gh-pages 404；实际操作前重新只读核 HEAD 和分支不存在。仅从空树原子构建精确发行树、以当前 main HEAD 为父提交并新建 gh-pages 指向该新提交；不强推、不覆盖、不改 main（正常文档提交除外）、无额外文件。建后实核远端树与 blobs，不把暂存等同部署。
+- 独立 D6 已签 PASS，实际只读 W6 四份文档与 release-manifest、PACKAGE-EVIDENCE 六份；仅允许精确新分支暂存及验证，仍须执行前重查权限和分支。Pages 配置及真实运行证据不在放行范围。
+- Pages 配置未知，根 HTTPS GET 404，无 settings 工具；暂存核验后若需开启，只请用户做 gh-pages /(root) 最小动作；不擅自改 Pages 或权限。线上匿名 HTTPS g1b 路径/必要资源/版本均验证后才称实验入口可用；真实成人 iPhone 测试仍以 W3 独立门槛取证。
+- 回滚记录实际先前无 gh-pages 分支及 main HEAD、发行提交/树。当且仅当另获明确授权才撤回新分支或由用户禁用对应 Pages 来源；若有先前已审核发行物，用同路径新提交精确恢复，不自动删除、不强推、不改 main。T3 STOP、真实相机与正式生产未获 W6 放行；G1b/G1c/G2–G5 未验。
