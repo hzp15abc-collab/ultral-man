@@ -1,5 +1,7 @@
 # ULTRAL-MAN · Agent 项目契约
 
+> recovery-w9 分支：先读 [W9 恢复记录](docs/iterations/w9-recovery.md)（D9 限定范围 PASS），它基于实际 W8 线上构建和四轮 Mac 代理实验。W6 历史规则及所有 W3 验收门槛保留；未取得后续独立工程选型与 D 放行前，不进入生产或发布。
+
 恢复执行时先读本文件、`docs/workflow.md` 当前已复核版本、`docs/tests.md`、`docs/decisions.md` 和 `docs/deployment.md`。以实际提交及证据为准。
 
 ## 产品与批准
