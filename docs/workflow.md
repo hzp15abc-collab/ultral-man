@@ -1,14 +1,15 @@
-# 工作流 · W1（REVIEWED）
+# 工作流 · W2（REVIEWED）
 
-U0-03 / 2026-11-22 / L 模式。用户已批准多 Agent 监督型体系、3D 游戏及 iPhone 优先；随后明确选择公开开发仓库。仅公开非私人规范和合规来源索引。G0 已通过独立 D1 审核，仅放行 G1a 研究工作单。
+U0-03 / 2026-11-22 / L 模式。用户已批准多 Agent 监督型体系、3D 游戏及 iPhone 优先；随后明确选择公开开发仓库。仅公开非私人规范和合规来源索引。W1 经独立 D1 放行后，五路 G1a 研究完成并通过独立文档初筛；流程自迭代 Agent 提出 W2，经独立 D2 复核通过，当前仅可呈交 U1，不能启动 G1b 或代码。
 
 | 门禁 | 状态 | 放行条件 |
 |---|---|---|
 | U0 | PASS | 用户明确认可 U0-03 |
 | G0/D1 | PASS | 独立监督 d_supervisor 实际只读核对 9 份项目文档 |
-| G1a | UNVERIFIED | 多 Agent 原始证据，独立初筛 |
+| G1a | PASS | 独立初筛研究证据与候选可进入 U1；非原型/实玩/真机验收 |
+| W2/D2 | PASS | d_supervisor 独立只读审核六份相关文档；仅放行 U1 |
 | U1 | UNVERIFIED | 用户体验并确认 Demo、审美与玩法参考 |
-| G1b | UNVERIFIED | 冻结统一协议后，隔离候选实际运行 |
+| G1b | UNVERIFIED | U1 明确确认后，另行 D 核定并冻结统一实验协议，隔离候选实际运行 |
 | G1c/D | UNVERIFIED | 非实现者复验、择优、更新文档并独立复核 |
 | G2 | UNVERIFIED | 逐模块实际产物及独立评审 |
 | G3 | UNVERIFIED | 独立视觉/音频/体验实物审核 |
@@ -21,7 +22,17 @@ U0-03 / 2026-11-22 / L 模式。用户已批准多 Agent 监督型体系、3D �
 
 W1 放行 G1a：并行研究 G1a-PLAY（可玩 3D/体感 Demo、儿童可读玩法指南），G1a-INPUT（自然手势、姿态推理、坐标与 iOS 支持），G1a-3D（Three.js/Babylon.js 等实际候选、移动端渲染），G1a-ASSET（角色、怪兽、城市、Blender/资源制作、动画和许可），G1a-ART（游戏设计/美术/特效/声音真实对标）。研究者只读已复核文档、在各自隔离路径保存公开可引用资料或返回证据；不生产、不提交远端、不执行不可信外部代码。每条记录来源 URL、作者/版本、访问日期、实看/实玩状态、许可/费用、限制及实验假设；尝试 GitHub、X 和现实游戏/官方渠道，渠道不可用记录。每路优先 2–3 个有证据的候选，不以数量凑数；预算为本轮单批调研，证据或渠道不足如实标记，不绕行权限。必要时合并任务但独立审核不合并。
 
-G1a 的独立初审分需求/玩法、技术、艺术、儿童舒适和许可；每项给 PASS/FAIL/UNVERIFIED/N/A、证据、限定下一步。整理已验证可玩链接、视频和可视化参考板给 U1，等待用户确认。U1 前不进入 G1b 或生产开发。
+G1a 五路候选及证据见 `research.md`、`reference-board.md`。网页/源码/商店入口已核，实际体感实玩、试听、兼容与 iPhone 真机仍 UNVERIFIED；不可称为已验证可玩的成品。外部相机仅由成人在了解第三方隐私后自愿体验，禁止儿童影像与私人数据进入测试或仓库。
+
+## W2 候选分流与 U1
+
+- 玩法参考：Kalidoface 3D、Splat、Party Fowl 仅供体验和设计参考，不作为生产依赖；Motion Bird 仅代码研究，非可玩入口。不同许可与第三方资源需独立核查。
+- 输入：MoveNet 与 MediaPipe Pose 待选实验；MediaPipe 精确锁版、权重/依赖许可及零遥测/上传/第三方外联为硬门，失败淘汰；BlazePose TFJS 仅备选。
+- 3D：Three.js、Babylon.js、PlayCanvas standalone 为待选池；后续由独立评审按风险和可比性确定 2–3 个组合，不凭文档直接选型。
+- 资产：Quaternius/KayKit 的 CC0 声明须核实际下载包、版本、免费范围和再分发条件；Blender 原创为替代候选。官方 IP 仅合法来源链接参考，不公开再分发官方素材或标识。
+- U1 审美提供 A 明亮玩具模型城市、B 明亮动画特摄或经用户明确描述的混合方向；同时明确认可玩法与动作反馈。守护城市、非接触、儿童舒适、无频闪/惊吓为共同硬约束。用户选择写入决策并经独立 D 再核定实验协议，才能启动 G1b，生产开发仍不得前置。
+
+G1b 待冻结协议见 `tests.md`。同场景、同输入、同随机种子、同合规同源资产；模型/引擎分组对照；真实 iPhone 测试误触/漏识、重复事件与去重、丢失暂停/恢复、帧时/反馈延迟 p50/p95、持续多局、内存/冷启动、权限拒绝/旋转/后台/退出停流、零遥测/上传/第三方外联以及舒适阈值。须在实验前冻结数值门槛和失败条件；硬门不以平均分覆盖。无实机则候选待测，不用代理结果冒充。
 
 ## 迭代制度
 
@@ -32,3 +43,11 @@ G2 里程碑：最小 3D/体感可玩切片 → 角色/场景资产 → 游戏�
 ## W1 独立 D 记录
 
 2026-11-22，独立审核者 d_supervisor，PASS（仅 G1a）。实际只读全部 9 份文档：AGENTS.md 与 docs/architecture.md、decisions.md、deployment.md、design.md、reference-board.md、research.md、tests.md、workflow.md；核对 U0-03、公开安全边界、3D、iPhone 优先、U1、专业委员会、失败回路和独立 D，未发现阻塞缺口。放行 G1a 并行隔离调研；G1a 完成后独立初审→独立流程自迭代 Agent→D 复核→U1 用户确认。其他门禁一律 UNVERIFIED。当前仓库初始 commit 04ab5cc1f8e06e831eedcc5339d3d9e4fa9ad347。
+
+## G1a 独立初筛与 W2 状态
+
+2026-11-22，独立审核者 d_supervisor，实际只读核对 `research.md`、`AGENTS.md`、W1。结论 PASS（证据足以提出 U1 方向），仅放行流程自迭代 W2 → D2 → U1，未独立实玩、试听或真机复跑；实际原型、许可最终确认、选型、体验、审美与性能均 UNVERIFIED。
+
+## W2 独立 D2 记录
+
+2026-11-22，自迭代 Agent workflow_iterate_w2 根据 G1a Review 更新 workflow、reference-board、decisions、tests，保留 W1 历史，分流证据与候选、明确 U1，以及 G1b 前实验硬门槛冻结。独立审核者 d_supervisor 实际只读全文 W2、reference-board.md、decisions.md、tests.md，及 research.md、AGENTS.md；PASS（仅放行 U1）。范围、许可、隐私、真实 iPhone、审美、同条件实验及历史记录无阻塞缺口。当前 W2 REVIEWED；等待用户 U1 明确确认 A/B/混合及玩法，随后另行 D 冻结 G1b 实验协议。U1、G1b、G1c、G2–G5 仍 UNVERIFIED；禁止提前实验、生产或发布。
