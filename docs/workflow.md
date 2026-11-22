@@ -16,7 +16,8 @@ U0-03 / 2026-11-22 / L 模式。用户已批准多 Agent 监督体系、3D 与 i
 | W5/D5 | PASS | d_supervisor 独立只读六份文档；仅放行 T1/T2 构建及本地静态审查 |
 | W5 最终静态构建独立复核 | PASS（限静态） | d_supervisor 实际只读产物/源码及逐文件哈希复算，无阻塞；运行与 Pages 未验 |
 | W6/D6 | PASS | d_supervisor 实际只读六份文档及清单；仅放行精确新分支暂存与远端验真 |
-| gh-pages 暂存/HTTPS 实验入口 | UNVERIFIED | 精确分支树及 blob 核对，Pages 配置/线上资源实证，不自动等于上线 |
+| gh-pages 暂存 | PASS | 29 个发行文件经总控及独立 d_supervisor 核实远端树、精确 blob、大小 |
+| HTTPS 实验入口 | BLOCKED / UNVERIFIED | 匿名 GET 根和 g1b/ 均 404；等待用户设置 Pages 发布源，实际可访问后验真 |
 | G1c/D | UNVERIFIED | 非实现者复验、择优、更新文档并独立复核 |
 | G2 | UNVERIFIED | 逐模块实际产物及独立评审 |
 | G3 | UNVERIFIED | 独立视觉/音频/体验实物审核 |
@@ -122,4 +123,8 @@ G2 里程碑：最小 3D/体感可玩切片 → 角色/场景资产 → 游戏�
 
 ## W6 自迭代记录（D6 已复核）
 
-2026-11-22，流程自迭代 Agent workflow_iterate_w2 根据 W5 实际构建及 d_supervisor 独立静态复核结论更新 workflow、decisions、tests、deployment，保留 W1–W5 和全部 W3 门槛。d_supervisor 实际只读 workflow、decisions、tests、deployment、release-manifest、PACKAGE-EVIDENCE 六份，D6 PASS，仅放行重新核对实际 main/仓库权限与 gh-pages 确实不存在后，原子暂存该 29 个精确文件于同仓库新 gh-pages/g1b 及远端树/blob 验真。禁止改 main（文档除外）、强推覆盖、改 Pages 或权限；不代表 HTTPS 上线、真实运行、G1b/G1c 或生产通过。当前没有远端实验提交或运行时结果，待执行。
+2026-11-22，流程自迭代 Agent workflow_iterate_w2 根据 W5 实际构建及 d_supervisor 独立静态复核结论更新 workflow、decisions、tests、deployment，保留 W1–W5 和全部 W3 门槛。d_supervisor 实际只读 workflow、decisions、tests、deployment、release-manifest、PACKAGE-EVIDENCE 六份，D6 PASS，仅放行重新核对实际 main/仓库权限与 gh-pages 确实不存在后，原子暂存该 29 个精确文件于同仓库新 gh-pages/g1b 及远端树/blob 验真。禁止改 main（文档除外）、强推覆盖、改 Pages 或权限；不代表 HTTPS 上线、真实运行、G1b/G1c 或生产通过。
+
+### W6 实际执行与独立远端核验
+
+2026-11-22，总控实际复查公开仓库、admin/push、gh-pages 明确 Branch not found 及 main HEAD `9c24d458c27a7129494350bb0b10df26899cba2e`；29 文件逐项远端 blob SHA1 核一致，空树 `fd9628884ffe7b5336818114c83e22d8b225add4`，原子新提交及新建 gh-pages HEAD `84a2f1dc8876985fc89b28ee40e1a3e0dbd01885`，父提交为上述 main。d_supervisor 独立实际只读 GitHub ref、commit、递归 tree 并比对 manifest，精确 29 regular blobs/10,663,193 bytes，path/mode/size/blob 相同、无额外路径/截断、main 暂存前后相同，PASS（staging only）。未改 Pages 或权限。总控匿名 GET `https://hzp15abc-collab.github.io/ultral-man/` 及 `https://hzp15abc-collab.github.io/ultral-man/g1b/` 均 HTTP 404，HTTPS 尚未上线验证。下一步需用户一次性设置 Settings→Pages→Deploy from a branch→gh-pages→/(root)→Save；实际匿名访问和资源/版本核对后才开展成人 iPhone 实验。所有运行时/真机/G1b/G1c/G2–G5 保持 UNVERIFIED。回滚仅在另获明确授权后撤回新建分支/对应 Pages 配置，不自动删除。
