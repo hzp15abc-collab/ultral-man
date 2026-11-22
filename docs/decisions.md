@@ -23,3 +23,12 @@
 - 同合法原创/CC0 GLB、场景、样本与负载；实际模型测量，分仅渲染/仅推理/并行。建议数值门槛、同源和资格预检见 `tests.md`，需 D3 独立审核冻结，实验结果均 UNVERIFIED。候选隔离工作目录及交付见 `workflow.md`；不得写生产或提交。
 - 真机需要用户可打开的 HTTPS 实验入口，具体发布位置未授权，不擅自变更 Pages 或其他仓库。代理浏览器结果不等于 iPhone 通过。无真机或真实资格证据时停在待验；G1c 仅择通过全部硬门的候选。
 - 独立 D3 已实际只读 workflow、tests、reference-board、decisions、design、AGENTS、research 七份文档并 PASS，仅放行隔离资格预检及代理实验，冻结阈值和共同配置要求。G1b/G1c 成绩、真机、生产及发布仍未获实测放行。
+
+## ADR-004 · G1b 环境阻塞 / W4 REVIEWED · 2026-11-22
+
+- T1/T2 精确依赖已安装并核锁文件，共享原创建模 GLB、官方 MoveNet Lightning v4 权重/合成 MP4、两组适配器/入口与共同 harness/runner 已建立并做语法及 hash 检查。共同配置及证据：`experiments/g1b/common/frozen-config.json`、`PROXY-STATUS.md`；公开安全摘要在 `tests.md`。此为预检/静态证据，不是实测结果或公开再分发验收。
+- T3 MediaPipe Tasks Vision 1.2.3 静态 SDK 存在自动 Google POST 遥测路径，WASM/NOTICE 署名未核，资格硬门 FAIL/STOP，未执行 SDK，无真实网络 trace。
+- T1 Chromium 在页面加载之前 socket() Operation not permitted (1) / SIGABRT，归因为环境权限 BLOCKED，并非模型或引擎失败，不绕过权限；T2 未重复同环境启动。没有代理结果目录或真实浏览器/推理/网络/性能/真机证据。d_supervisor 独立实际只读七个代码/配置及相关文档、复算 hash 并核无 proxy-results；不是独立运行复验。G1b/G1c 与 T1/T2 实际成绩 UNVERIFIED，不得选型或发布游戏。
+- W4 仅自迭代记录阻塞，待 D4 独立审核。唯一下一步是在 D4 放行后由总控向用户请求明确授权当前公开仓库下隔离 HTTPS 实验入口（非正式发布；具体 Pages 配置/测试路径未核定）。公开仓库选择不等于 Pages 实验发布授权；此前不提交实验、不改配置、不切换环境。
+- 即使用户授权，现有页面只是合成烟测，需新工作单及独立审查实现 iPhone 成人自愿相机/停流、完整 W3 指标、合法版本/权重/资源白名单/许可与署名、最小发布清单/hash/回滚和上线隐私复核；无授权与审查不可发布候选。W3 硬门原样保留，G1c 与后续生产仍不可前置。
+- 独立 D4 已通过：d_supervisor 实际全文只读 workflow、decisions、tests、deployment、PROXY-STATUS 与 frozen-config 六份；仅放行向用户请求独立 HTTPS 实验入口授权，无实现或部署授权。
