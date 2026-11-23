@@ -1,6 +1,6 @@
-# W41 isolated diagnostic; exact review required.
-# Same original security policy and candidate identities. Model-free T2 only.
-name: W41 categorical guard diagnostic
+# W42 independently isolated T1 combined diagnostic; exact review required.
+# Same original security policy and candidate identities. T1 only.
+name: W42 independent T1 combined diagnostic
 on:
   push:
     branches: [ci/webgl-probe-w18]
@@ -47,7 +47,7 @@ jobs:
           node -e 'for(const n of ["playwright","playwright-core"])if(require(n+"/package.json").version!=="1.58.2")process.exit(1)'
           unset PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD
           node node_modules/playwright/cli.js install webkit
-      - name: Verify exact identities and run one model-free no-camera baseline
+      - name: Verify exact identities and run one independent T1 combined case
         shell: bash
         run: |
           set -euo pipefail
@@ -97,7 +97,7 @@ jobs:
             const b=docs.get(f);active.server[f]=(active.server[f]||0)+1;
             res.writeHead(200,{'Content-Type':mime[path.extname(f)],'Content-Length':b.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':csp,'Referrer-Policy':'no-referrer','Permissions-Policy':'camera=(), microphone=(), display-capture=()'});res.end(b);
           });
-          const result={scope:'W41 model-free T2 categorical guard diagnostic; no model or camera',cases:[],candidateTree:'d9ee717a3a9523bb227c725c3c2d52861725a0e58200b8cecc51b8aff8deef6c',candidateManifest:'81d7460bc04f6333bc2930542c480ca349afeb18b111729536adc21506aa3da9',candidateFiles:49,fixtureFiles:4,generatedIdentity};
+          const result={scope:'W42 independent T1 actual readiness and four synthetic frame regression; no camera',cases:[],candidateTree:'d9ee717a3a9523bb227c725c3c2d52861725a0e58200b8cecc51b8aff8deef6c',candidateManifest:'81d7460bc04f6333bc2930542c480ca349afeb18b111729536adc21506aa3da9',candidateFiles:49,fixtureFiles:4,generatedIdentity};
           function classify(url,allow){try{const u=new URL(url);if(u.origin!==origin||u.search||u.hash)return null;const p=u.pathname.slice(1);return allow.has(p)?p:null;}catch{return null;}}
           async function trial(browser,engine,mode){
             const allow=new Set(mode==='baseline'?baseline:[...shared,engine==='T1'?'t1.bundle.js':'t2.bundle.js']);for(const f of allow)assert(docs.has(f));
@@ -203,7 +203,7 @@ jobs:
               if(!out.closed||!d?.cleanup?.verified||out.closeFailure||out.timedOut||out.stageTimeout||out.stageIncomplete){violation('cleanup-deadline');}
               const expectedStages=[...(mode==='baseline'?[]:['W40_PREPARATION_BEGIN','W40_PREPARATION_END']),'W40_FIRST_DRAW_BEGIN','W40_FIRST_DRAW_END'];
               out.pass=!out.failure&&!out.timedOut&&!out.closeFailure&&out.closed&&!out.violations&&!out.requestFailures&&!out.pageErrors&&!out.consoleErrors&&out.notRequested.length===0&&JSON.stringify(out.stages)===JSON.stringify(expectedStages)&&d?.engine===engine&&d?.mode===mode&&d?.pass===true&&d?.estimateCalls===(mode==='baseline'?0:5)&&d?.preparationEstimateCalls===(mode==='baseline'?0:1)&&d?.activeEstimateCalls===(mode==='baseline'?0:4);
-              console.log('W41_CASE '+JSON.stringify(out));active=null;
+              console.log('W42_CASE '+JSON.stringify(out));active=null;
             }
             return out;
           }
@@ -212,14 +212,14 @@ jobs:
             try{
               await new Promise((ok,fail)=>{server.once('error',fail);server.listen(0,'127.0.0.1',ok);});origin='http://127.0.0.1:'+server.address().port;
               browser=await webkit.launch({headless:true,timeout:30000});result.webkit=browser.version();result.arch=process.arch;
-              for(const [engine,mode] of [['T2','baseline']]){if(halt)break;const r=await trial(browser,engine,mode);result.cases.push({engine,mode,pass:r.pass,estimates:r.diagnostic?.estimateCalls??0,preparation:r.diagnostic?.preparationEstimateCalls??0,active:r.diagnostic?.activeEstimateCalls??0,violations:r.violations,closed:r.closed});}
+              for(const [engine,mode] of [['T1','combined']]){if(halt)break;const r=await trial(browser,engine,mode);result.cases.push({engine,mode,pass:r.pass,estimates:r.diagnostic?.estimateCalls??0,preparation:r.diagnostic?.preparationEstimateCalls??0,active:r.diagnostic?.activeEstimateCalls??0,violations:r.violations,closed:r.closed});}
             }catch{result.infrastructureError=true;}
             finally{
               if(browser)try{await browser.close();result.browserClosed=true;}catch{result.infrastructureError=true;}
               try{await new Promise((ok,fail)=>server.close(e=>e?fail(e):ok()));result.serverClosed=true;}catch{result.infrastructureError=true;}
               result.halted=halt;result.totalEstimates=result.cases.reduce((s,r)=>s+r.estimates,0);
-              console.log('W41_SUMMARY '+JSON.stringify(result));
-              if(halt||result.infrastructureError||!result.browserClosed||!result.serverClosed||result.cases.length!==1||result.totalEstimates!==0||result.cases.some(x=>!x.pass))process.exitCode=1;
+              console.log('W42_SUMMARY '+JSON.stringify(result));
+              if(halt||result.infrastructureError||!result.browserClosed||!result.serverClosed||result.cases.length!==1||result.totalEstimates!==5||result.cases.some(x=>!x.pass))process.exitCode=1;
             }
           })().catch(()=>{process.exitCode=1;});
           TEST
