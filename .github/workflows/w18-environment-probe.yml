@@ -1,6 +1,6 @@
-# W44 exact integrated T1 UI practice; exact review required.
+# W45 restore original countdown helper; exact review required.
 # Same strict W42 response security, anonymous practice only. T1 only.
-name: W44 integrated T1 practice
+name: W45 integrated T1 practice
 on:
   push:
     branches: [ci/webgl-probe-w18]
@@ -89,7 +89,7 @@ jobs:
             const b=docs.get(f);active.server[f]=(active.server[f]||0)+1;
             res.writeHead(200,{'Content-Type':mime[path.extname(f)],'Content-Length':b.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Security-Policy':csp,'Referrer-Policy':'no-referrer','Permissions-Policy':'camera=(), microphone=(), display-capture=()'});res.end(b);
           });
-          const result={scope:'W44 exact integrated candidate T1 anonymous touch practice only',cases:[],baseFiles:49,assembledFiles:51,assembledHash:'5abb2de1321fad45757494ac9004ffce298bc3eae7dfe7d2230112ebf66487e6'};
+          const result={scope:'W45 exact integrated candidate T1 anonymous touch practice only',cases:[],baseFiles:49,assembledFiles:51,assembledHash:'5abb2de1321fad45757494ac9004ffce298bc3eae7dfe7d2230112ebf66487e6'};
           function classify(url){try{const u=new URL(url);if(u.origin!==origin||u.username||u.password||u.search||u.hash)return null;const p=u.pathname.slice(1);return runtime.has(p)?p:null;}catch{return null;}}
           async function trial(browser,engine){
             const out={engine,pass:false,violations:0,violationKinds:{},requestFailures:0,pageErrors:0,consoleErrors:0,server:{},requested:{},verified:{},checks:{},closed:false};
@@ -97,6 +97,7 @@ jobs:
             const pending=[],reqs=new Map();let context,page,deadline=Date.now()+120000;
             const watchdog=setTimeout(()=>{out.timedOut=true;halt=true;if(context)void context.close().catch(()=>{out.closeFailure=true;});},120000);
             const remain=(cap=10000)=>{if(halt)throw Error('safety-stop');const n=deadline-Date.now();if(n<=0)throw Error('case-deadline');return Math.min(n,cap);};
+            function remainingForBreak(){return remain(35000);}
             const mark=(id,ok)=>{out.checks[id]=!!ok;assert(ok,id);};
             function register(req){
               if(reqs.has(req))return reqs.get(req);
@@ -312,7 +313,7 @@ jobs:
               if(!g?.mediaGuard||g.cameraCalls||g.media||g.streams||g.csp||!g.passive||g.gl?.lost)violation('media-csp-final');
               const names=["real-app-webgl-draw","practice-label","selected-t1-context","t1-only-option","default-passive-no-consent","round-start","unarmed-no-credit","light-credit","manual-pause-clock","resume-rearm-required","shield-credit","successful-round","next-round","real-time-break","retry-keeps-progress","retry-success","restart-clears-total","mute-reachable","volume-reachable","short-stage-visible","short-guide-not-overlaid","short-guide-width","short-guide-reachable","short-resume-reachable","short-resume-in-viewport","portrait-rotate-hint","stop-exit","restart-available","model-without-consent-disabled","model-with-consent-clickable","http-camera-refused","practice-recovery","hero-choice-real-draw","city-choice-real-draw","recovered-practice-start","final-stop"];
               out.pass=!out.failure&&!out.timedOut&&!out.closeFailure&&out.closed&&!out.violations&&!out.requestFailures&&!out.pageErrors&&!out.consoleErrors&&Object.keys(out.checks).length===names.length&&names.every(n=>out.checks[n]===true)&&['index.html','input-lifecycle.mjs','prepare-input-detector.mjs','readiness.mjs','t1.bundle.js','art/scenes/dawn-cloud-dawn.glb','art/scenes/star-cloud-dawn.glb','art/scenes/star-cloud-sunset.glb'].every(f=>out.verified[f]>0);
-              console.log('W44_CASE '+JSON.stringify(out));active=null;
+              console.log('W45_CASE '+JSON.stringify(out));active=null;
             }
             return out;
           }
@@ -327,7 +328,7 @@ jobs:
               if(browser)try{await browser.close();result.browserClosed=true;}catch{result.infrastructureError=true;}
               try{await new Promise((ok,fail)=>server.close(e=>e?fail(e):ok()));result.serverClosed=true;}catch{result.infrastructureError=true;}
               result.halted=halt;
-              console.log('W44_SUMMARY '+JSON.stringify(result));
+              console.log('W45_SUMMARY '+JSON.stringify(result));
               if(halt||result.infrastructureError||!result.browserClosed||!result.serverClosed||result.cases.length!==1||result.cases.some(x=>!x.pass))process.exitCode=1;
             }
           })().catch(()=>{process.exitCode=1;});
