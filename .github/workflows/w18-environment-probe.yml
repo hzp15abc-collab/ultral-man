@@ -1,6 +1,6 @@
-# W45 restore original countdown helper; exact review required.
+# W46 restore original countdown helper; exact review required.
 # Same strict W42 response security, anonymous practice only. T1 only.
-name: W45 integrated T1 practice
+name: W46 integrated T1 practice
 on:
   push:
     branches: [ci/webgl-probe-w18]
@@ -92,7 +92,7 @@ jobs:
           const result={scope:'W45 exact integrated candidate T1 anonymous touch practice only',cases:[],baseFiles:49,assembledFiles:51,assembledHash:'5abb2de1321fad45757494ac9004ffce298bc3eae7dfe7d2230112ebf66487e6'};
           function classify(url){try{const u=new URL(url);if(u.origin!==origin||u.username||u.password||u.search||u.hash)return null;const p=u.pathname.slice(1);return runtime.has(p)?p:null;}catch{return null;}}
           async function trial(browser,engine){
-            const out={engine,pass:false,violations:0,violationKinds:{},requestFailures:0,pageErrors:0,consoleErrors:0,server:{},requested:{},verified:{},checks:{},closed:false};
+            const out={engine,pass:false,violations:0,violationKinds:{},requestFailures:0,pageErrors:0,consoleErrors:0,server:{},requested:{},verified:{},checks:{},glChecks:{},closed:false};
             active=out;
             const pending=[],reqs=new Map();let context,page,deadline=Date.now()+120000;
             const watchdog=setTimeout(()=>{out.timedOut=true;halt=true;if(context)void context.close().catch(()=>{out.closeFailure=true;});},120000);
@@ -115,19 +115,41 @@ jobs:
                   active:document.querySelector('[data-goal].active')?.dataset.goal,roundStars:document.querySelectorAll('#stars .earned').length,
                   status:$('visual-status').textContent,visualError:$('visual-status').classList.contains('is-error'),
                   mediaGuard:s.guard,cameraCalls:s.cameraCalls,gl:s.gl,csp:s.csp,media:s.mediaElements,passive,
-                  streams:m.filter(e=>e.srcObject).length,guardEvents:s.guardEvents,audio:s.audio,
+                  streams:m.filter(e=>e.srcObject).length,guardEvents:s.guardEvents,audio:s.audio,lifecycle:window.__w46Life?.snapshot()??null,lifecycleFinal:window.__w46Life?.final()===true,
                   canvas:{w:c.width,h:c.height,box:rect(c)},stage:rect($('stage')),guide:rect($('goal-hint')),
                   rotate:getComputedStyle(document.querySelector('.rotate-hint')).display,viewport:{w:innerWidth,h:innerHeight},scroll:scrollY,muted:$('mute').getAttribute('aria-pressed')};
               });
             }
             async function guard(){
               const s=await state();
-              if(!s.mediaGuard||s.cameraCalls||s.media||s.streams||s.csp||!s.passive||s.gl.lost){violation('media-csp-guard');throw Error('media-csp-stop');}
+              if(!s.mediaGuard||s.cameraCalls||s.media||s.streams||s.csp||!s.passive){violation('media-csp-guard');throw Error('media-csp-stop');}
+              if(!s.lifecycle?.healthy){violation('gl-lifecycle-guard');throw Error('gl-lifecycle-stop');}
               if(halt)throw Error('network-identity-stop');return s;
             }
             async function click(sel){await guard();await page.locator(sel).click({timeout:remain()});return guard();}
             async function wait(fn,args,cap=10000){await page.waitForFunction(fn,args,{timeout:remain(cap)});return guard();}
             async function step(name,pred){const s=await guard();mark(name,pred(s));return s;}
+            async function planTeardown(label){
+              await guard();const ok=await page.evaluate(l=>window.__w46Life.plan(l),label);
+              if(!ok){violation('gl-plan');throw Error('gl-plan');}
+              await guard();
+            }
+            async function finishTeardown(label,kind){
+              await wait(([label,kind])=>window.__w46Life.ready(label,kind),[label,kind],10000);
+              if(kind==='stop'){
+                const draws=(await guard()).gl.draws;
+                await page.waitForTimeout(Math.min(200,remain()));
+                if((await guard()).gl.draws!==draws){violation('gl-stop-draws');throw Error('gl-stop-draws');}
+              }
+              const ok=await page.evaluate(([label,kind])=>window.__w46Life.finish(label,kind),[label,kind]);
+              if(!ok){violation('gl-finish');throw Error('gl-finish');}
+              out.glChecks[label]=true;await guard();
+            }
+            async function verifyRecovery(){
+              const ok=await page.evaluate(()=>window.__w46Life.recovered());
+              if(!ok){violation('gl-recovery');throw Error('gl-recovery');}
+              out.glChecks.recovery=true;await guard();
+            }
             try{
               context=await browser.newContext({viewport:{width:960,height:540},serviceWorkers:'block',permissions:[]});
               await context.addInitScript(()=>{
@@ -177,14 +199,105 @@ jobs:
                   }
                   const p=window.BaseAudioContext?.prototype;
                   if(typeof p?.decodeAudioData==='function'){const m=p.decodeAudioData;pin(p,'decodeAudioData',function(...a){s.audio.decodes++;return m.apply(this,a);});}
-                  const original=HTMLCanvasElement.prototype.getContext,seen=new WeakSet();
+                  // Passive context-owner instrumentation. Native methods are only invoked by
+                  // forwarding existing app invocations. The harness never requests an extension
+                  // or invokes loseContext itself; all planning operations only inspect state.
+                  const labels=['first-stop','hero-choice','city-choice','final-stop'];
+                  const kinds=['stop','replace','replace','stop'];
+                  const owners=[],byContext=new WeakMap(),byCanvas=new WeakMap(),byExtension=new WeakMap();
+                  const counts={calls:0,returns:0,matchedEvents:0,unexpectedCalls:0,unexpectedEvents:0,duplicates:0,wrapperFailures:0,unknownOwner:0,drawAfterRelease:0,reuseAfterRelease:0,restoreEvents:0,planFailures:0};
+                  const completed=[];
+                  let pending=null,latest=null,recovery=null;
+                  const current=()=>byCanvas.get(document.getElementById('scene'))??null;
+                  const healthy=o=>!!o&&!o.calls&&!o.events&&o.draws>0&&o.canvas.isConnected&&current()===o&&!o.gl.isContextLost();
+                  const countsClean=()=>['unexpectedCalls','unexpectedEvents','duplicates','wrapperFailures','unknownOwner','drawAfterRelease','reuseAfterRelease','restoreEvents','planFailures'].every(k=>counts[k]===0);
+                  const healthyEvidence=()=>countsClean()&&s.gl.lost===counts.matchedEvents&&counts.returns===counts.calls&&owners.every(o=>!o.gl.isContextLost()||(o.calls===1&&o.returns===1&&(pending?.owner===o||completed.some(p=>p.owner===o.id))));
+                  function snapshot(){
+                    return {counts:{...counts},healthy:healthyEvidence(),pending:pending?.label??null,completed:completed.map(p=>({...p})),recovery,
+                      current:current()?.id??null,owners:owners.map(o=>({id:o.id,draws:o.draws,calls:o.calls,returns:o.returns,events:o.events,wrapped:o.wrapped,connected:o.canvas.isConnected,contextLost:o.gl.isContextLost()}))};
+                  }
+                  function plan(label){
+                    const index=completed.length,o=current();
+                    if(pending||labels[index]!==label||!healthyEvidence()||!healthy(o)||o!==latest){counts.planFailures++;return false;}
+                    pending={label,kind:kinds[index],owner:o,drawAtPlan:o.draws};return true;
+                  }
+                  function ready(label,kind){
+                    const p=pending,o=p?.owner;
+                    if(!p||p.label!==label||p.kind!==kind||!healthyEvidence()||!o.wrapped||o.calls!==1||o.returns!==1||o.events!==1||!o.gl.isContextLost()||o.draws<p.drawAtPlan)return false;
+                    if(kind==='stop')return current()===o&&latest===o;
+                    const n=current();
+                    return !o.canvas.isConnected&&n!==o&&n===latest&&n.id===o.id+1&&healthy(n);
+                  }
+                  function finish(label,kind){
+                    if(!ready(label,kind)){counts.planFailures++;return false;}
+                    const p=pending,o=p.owner;
+                    completed.push({label,kind,owner:o.id,drawAtPlan:p.drawAtPlan,drawAtRelease:o.draws,replacement:kind==='replace'?current().id:null,sameOwnerCallAndEvent:true,oldDisconnected:!o.canvas.isConnected});
+                    pending=null;return true;
+                  }
+                  function recovered(){
+                    const first=completed[0],o=owners[0],n=current();
+                    if(recovery!==null||first?.label!=='first-stop'||!o||o.canvas.isConnected||!o.gl.isContextLost()||!healthyEvidence()||!healthy(n)||n.id!==o.id+1||n!==latest){counts.planFailures++;return false;}
+                    recovery={oldOwner:o.id,newOwner:n.id,oldDisconnected:true,newDraws:n.draws};return true;
+                  }
+                  function final(){
+                    return healthyEvidence()&&!pending&&completed.length===4&&completed.every((p,i)=>p.label===labels[i]&&p.kind===kinds[i])&&!!recovery&&owners.length===4&&
+                      counts.calls===4&&counts.returns===4&&counts.matchedEvents===4&&s.gl.lost===4&&owners.every(o=>o.wrapped&&o.calls===1&&o.returns===1&&o.events===1&&o.gl.isContextLost())&&current()===latest&&latest===owners[3];
+                  }
+                  Object.defineProperty(window,'__w46Life',{value:Object.freeze({snapshot,plan,ready,finish,recovered,final}),writable:false,configurable:false});
+                  const original=HTMLCanvasElement.prototype.getContext;
                   pin(HTMLCanvasElement.prototype,'getContext',function(type,...args){
+                    const sceneType=['webgl','webgl2','experimental-webgl'].includes(type);
+                    const prior=sceneType?byCanvas.get(this):null;
+                    if(prior&&(prior.calls||prior.events))counts.reuseAfterRelease++;
                     const gl=original.call(this,type,...args);
-                    if(gl&&['webgl','webgl2','experimental-webgl'].includes(type)&&this.id==='scene'&&!seen.has(gl)){
-                      seen.add(gl);s.gl.contexts++;this.addEventListener('webglcontextlost',()=>s.gl.lost++);
+                    if(gl&&sceneType&&this.id==='scene'){
+                      const seen=byContext.get(gl);
+                      if(seen){if(seen.canvas!==this)counts.unknownOwner++;return gl;}
+                      if(prior||this!==document.getElementById('scene'))counts.unknownOwner++;
+                      if(latest&&(!latest.calls||latest.returns!==1||latest.canvas.isConnected))counts.unknownOwner++;
+                      const o={id:owners.length+1,canvas:this,gl,draws:0,calls:0,returns:0,events:0,wrapped:false,extension:null,wrapper:null};
+                      owners.push(o);byContext.set(gl,o);byCanvas.set(this,o);latest=o;s.gl.contexts++;
+                      this.addEventListener('webglcontextlost',e=>{
+                        s.gl.lost++;o.events++;
+                        if(o.events!==1){counts.duplicates++;return;}
+                        if(!e.isTrusted||e.target!==o.canvas||e.currentTarget!==o.canvas||pending?.owner!==o||o.calls!==1||!o.wrapped){counts.unexpectedEvents++;return;}
+                        counts.matchedEvents++;
+                      });
+                      this.addEventListener('webglcontextrestored',()=>counts.restoreEvents++);
+                      const get=gl.getExtension;
+                      try{
+                        if(typeof get!=='function')throw Error('extension-wrapper');
+                        const wrappedGet=function(...a){
+                          const ext=Reflect.apply(get,this,a);
+                          if(a[0]!=='WEBGL_lose_context')return ext;
+                          if(this!==gl){counts.unknownOwner++;return ext;}
+                          if(!ext||typeof ext.loseContext!=='function'){counts.wrapperFailures++;return ext;}
+                          if(o.extension){
+                            if(ext!==o.extension||ext.loseContext!==o.wrapper)counts.wrapperFailures++;
+                            return ext;
+                          }
+                          if(byExtension.has(ext)){counts.unknownOwner++;return ext;}
+                          const nativeLose=ext.loseContext;
+                          const wrapper=function(...v){
+                            counts.calls++;o.calls++;
+                            if(o.calls!==1)counts.duplicates++;
+                            if(this!==ext||pending?.owner!==o||!o.wrapped||o.events||o!==current())counts.unexpectedCalls++;
+                            try{const r=Reflect.apply(nativeLose,this,v);o.returns++;counts.returns++;return r;}
+                            catch(e){counts.wrapperFailures++;throw e;}
+                          };
+                          try{pin(ext,'loseContext',wrapper);o.extension=ext;o.wrapper=wrapper;o.wrapped=true;byExtension.set(ext,o);}
+                          catch{counts.wrapperFailures++;}
+                          return ext;
+                        };
+                        pin(gl,'getExtension',wrappedGet);
+                      }catch{counts.wrapperFailures++;}
                       for(const n of ['drawArrays','drawElements','drawArraysInstanced','drawElementsInstanced']){
-                        if(typeof gl[n]!=='function')continue;const method=gl[n];gl[n]=function(...a){const r=method.apply(this,a);s.gl.draws++;return r;};
-                        if(gl[n]!==method)s.gl.observed=true;
+                        if(typeof gl[n]!=='function')continue;
+                        const method=gl[n];
+                        try{
+                          const draw=function(...a){if(this!==gl)counts.unknownOwner++;if(o.calls||o.events)counts.drawAfterRelease++;const r=Reflect.apply(method,this,a);s.gl.draws++;o.draws++;return r;};
+                          pin(gl,n,draw);if(gl[n]===draw)s.gl.observed=true;
+                        }catch{counts.wrapperFailures++;}
                       }
                     }
                     return gl;
@@ -272,12 +385,12 @@ jobs:
           await page.evaluate(()=>window.scrollTo(0,0));
           const p=await guard();out.portraitLayout={canvas:p.canvas.box,stage:p.stage,guide:p.guide,viewport:p.viewport,controls:await controlRects(),scope:'ordinary WebKit viewport, not iPhone hardware'};
           mark('portrait-rotate-hint',p.rotate!=='none'&&p.canvas.box.left>=-1&&p.canvas.box.right<=p.viewport.w+1);
-          await click('#stop');await step('stop-exit',s=>s.title==='练习结束啦');
+          await planTeardown('first-stop');await click('#stop');await finishTeardown('first-stop','stop');await step('stop-exit',s=>s.title==='练习结束啦');
           mark('restart-available',await page.locator('#start').isVisible());
           // W44 focused extras: exact candidate UI and genuine HTTP camera refusal.
           await page.setViewportSize({width:960,height:540});await guard();
           await page.locator('#input-mode').selectOption('model',{timeout:remain()});await guard();
-          await wait(()=>document.querySelector('#visual-status').hidden,null,15000);
+          await wait(()=>document.querySelector('#visual-status').hidden,null,15000);await verifyRecovery();
           mark('model-without-consent-disabled',await page.locator('#consent-controls').isVisible()&&await page.locator('#start').isDisabled()&&!(await page.locator('#adult-consent').isChecked()));
           await page.locator('#adult-consent').check({timeout:remain()});await guard();
           mark('model-with-consent-clickable',await page.locator('#start').isEnabled());
@@ -288,13 +401,13 @@ jobs:
           await wait(()=>document.querySelector('#visual-status').hidden,null,15000);
           await step('practice-recovery',s=>s.source.includes('无相机')&&s.title==='准备一起出发'&&s.progress===0&&s.passive);
           let prev=(await guard()).gl.draws;
-          await page.locator('#hero').selectOption('star',{timeout:remain()});await guard();await drawReady(prev);
+          await planTeardown('hero-choice');await page.locator('#hero').selectOption('star',{timeout:remain()});await guard();await drawReady(prev);await finishTeardown('hero-choice','replace');
           mark('hero-choice-real-draw',await page.locator('#hero').inputValue()==='star'&&(await guard()).gl.draws>prev);
           prev=(await guard()).gl.draws;
-          await page.locator('#city').selectOption('sunset',{timeout:remain()});await guard();await drawReady(prev);
+          await planTeardown('city-choice');await page.locator('#city').selectOption('sunset',{timeout:remain()});await guard();await drawReady(prev);await finishTeardown('city-choice','replace');
           mark('city-choice-real-draw',await page.locator('#city').inputValue()==='sunset'&&(await guard()).gl.draws>prev);
           await click('#start');await step('recovered-practice-start',s=>s.progress===0&&s.active==='light'&&s.source.includes('无相机'));
-          await click('#stop');await step('final-stop',s=>s.title==='练习结束啦'&&s.passive&&!s.cameraCalls);
+          await planTeardown('final-stop');await click('#stop');await finishTeardown('final-stop','stop');await step('final-stop',s=>s.title==='练习结束啦'&&s.passive&&!s.cameraCalls);
           await Promise.all(pending);await guard();
               out.guardSnapshot=await guard();
               out.audioObserved={requests:Object.keys(out.verified).filter(f=>f.startsWith('art/audio/')).length,starts:out.guardSnapshot.audio.starts,decodes:out.guardSnapshot.audio.decodes,scope:'static WAV output requests and browser audio API, not heard'};
@@ -310,10 +423,11 @@ jobs:
               for(const f of Object.keys(out.server))if(out.requested[f]!==out.server[f])violation('server-count');
               out.notRequested=Object.keys(Object.fromEntries(manifest)).filter(f=>!out.requested[f]).sort();
               const g=out.guardSnapshot;
-              if(!g?.mediaGuard||g.cameraCalls||g.media||g.streams||g.csp||!g.passive||g.gl?.lost)violation('media-csp-final');
+              if(!g?.mediaGuard||g.cameraCalls||g.media||g.streams||g.csp||!g.passive)violation('media-csp-final');
+              if(!g?.lifecycle?.healthy||!g.lifecycleFinal||!['first-stop','hero-choice','city-choice','final-stop','recovery'].every(k=>out.glChecks[k]===true))violation('gl-lifecycle-final');
               const names=["real-app-webgl-draw","practice-label","selected-t1-context","t1-only-option","default-passive-no-consent","round-start","unarmed-no-credit","light-credit","manual-pause-clock","resume-rearm-required","shield-credit","successful-round","next-round","real-time-break","retry-keeps-progress","retry-success","restart-clears-total","mute-reachable","volume-reachable","short-stage-visible","short-guide-not-overlaid","short-guide-width","short-guide-reachable","short-resume-reachable","short-resume-in-viewport","portrait-rotate-hint","stop-exit","restart-available","model-without-consent-disabled","model-with-consent-clickable","http-camera-refused","practice-recovery","hero-choice-real-draw","city-choice-real-draw","recovered-practice-start","final-stop"];
               out.pass=!out.failure&&!out.timedOut&&!out.closeFailure&&out.closed&&!out.violations&&!out.requestFailures&&!out.pageErrors&&!out.consoleErrors&&Object.keys(out.checks).length===names.length&&names.every(n=>out.checks[n]===true)&&['index.html','input-lifecycle.mjs','prepare-input-detector.mjs','readiness.mjs','t1.bundle.js','art/scenes/dawn-cloud-dawn.glb','art/scenes/star-cloud-dawn.glb','art/scenes/star-cloud-sunset.glb'].every(f=>out.verified[f]>0);
-              console.log('W45_CASE '+JSON.stringify(out));active=null;
+              console.log('W46_CASE '+JSON.stringify(out));active=null;
             }
             return out;
           }
@@ -328,7 +442,7 @@ jobs:
               if(browser)try{await browser.close();result.browserClosed=true;}catch{result.infrastructureError=true;}
               try{await new Promise((ok,fail)=>server.close(e=>e?fail(e):ok()));result.serverClosed=true;}catch{result.infrastructureError=true;}
               result.halted=halt;
-              console.log('W45_SUMMARY '+JSON.stringify(result));
+              console.log('W46_SUMMARY '+JSON.stringify(result));
               if(halt||result.infrastructureError||!result.browserClosed||!result.serverClosed||result.cases.length!==1||result.cases.some(x=>!x.pass))process.exitCode=1;
             }
           })().catch(()=>{process.exitCode=1;});
